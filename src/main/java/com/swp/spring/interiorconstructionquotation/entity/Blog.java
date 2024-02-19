@@ -1,26 +1,41 @@
 package com.swp.spring.interiorconstructionquotation.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "blogs")
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "blog")
+@Data
 public class Blog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private Integer categoryId;
+    @Column(name = "blog_id")
+    private int blogId;
+
+    @Column(name = "descrription", columnDefinition = "LONGTEXT")
+    private String description;
+
+    @Column(name = "title", columnDefinition = "TEXT")
     private String title;
-    @Column(length = 10000)
-    private String content;
-    private String imageName;
-    private LocalDateTime createdDate;
+
+    @Column(name = "created_date")
+    private Date createdDate;
+
+    @ManyToOne(
+            cascade = {
+                    CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH
+            }
+    )
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @OneToMany(
+            mappedBy = "blog",
+            fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<BlogImage> imageList;
 }
