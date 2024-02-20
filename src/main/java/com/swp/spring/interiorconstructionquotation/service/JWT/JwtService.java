@@ -26,14 +26,15 @@ public class JwtService {
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         User user = iUserRepository.findByUsername(username);
+        int userId = user.getUserId();
         boolean enabled = user.isEnabled();
         String role = "";
         if (user != null && ! user.getRoles().isEmpty()){
             List<Role> list = user.getRoles().stream().toList();
             role = list.get(0).getName();
         }
+        claims.put("id", userId);
         claims.put("role", role);
-
         claims.put("enabled", enabled);
         return createToken(claims, username);
     }
