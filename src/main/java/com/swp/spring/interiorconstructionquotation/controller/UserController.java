@@ -1,6 +1,8 @@
 package com.swp.spring.interiorconstructionquotation.controller;
 
 import com.swp.spring.interiorconstructionquotation.entity.User;
+import com.swp.spring.interiorconstructionquotation.security.ChangePasswordRequest;
+import com.swp.spring.interiorconstructionquotation.security.ForgetPasswordRequest;
 import com.swp.spring.interiorconstructionquotation.security.JwtResponse;
 import com.swp.spring.interiorconstructionquotation.security.LoginRequest;
 import com.swp.spring.interiorconstructionquotation.service.JWT.JwtService;
@@ -30,16 +32,26 @@ public class UserController {
     private JwtService jwtService;
 
     // Allow requests from 'http://localhost:3000'
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@Validated @RequestBody User user){
-        ResponseEntity<?> response = iUserService.register(user);
-        return response;
-    }
 
     @GetMapping("/enable")
     public ResponseEntity<?> enableAccount(@RequestParam String email, @RequestParam String enableCode){
         ResponseEntity<?> response = iUserService.enableAccount(email, enableCode);
         return response;
+    }
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@Validated @RequestBody User user){
+        ResponseEntity<?> response = iUserService.register(user);
+        return response;
+    }
+    @PostMapping("/forget-password")
+    public ResponseEntity<?> forgetPassword(@RequestBody ForgetPasswordRequest forgetPasswordRequest){
+        try {
+            iUserService.forgetPassword(forgetPasswordRequest.getUsername(), forgetPasswordRequest.getEmail());
+            return ResponseEntity.ok("Gửi email thành công!");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Đã xảy ra lỗi trong quá trình xử lý");
+        }
+
     }
 
     @PostMapping("/login")
@@ -61,5 +73,23 @@ public class UserController {
             return ResponseEntity.badRequest().body("Tên đăng nhập hặc mật khẩu không chính xác.");
         }
         return ResponseEntity.badRequest().body("Xác thực không thành công.");
+    }
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest){
+        // Xác thực người dùng bằng tên đăng nhập và mật khẩu
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(changePasswordRequest.getUsername(), changePasswordRequest.getOldPassword())
+            );
+            if(authentication.isAuthenticated()){
+                iUserService.changePassword(changePasswordRequest.getUsername(), changePasswordRequest.getNewPassword());
+                return ResponseEntity.ok("Đổi mật khẩu thành công!");
+            }
+        }catch (AuthenticationException e){
+            // Xác thực không thành công, trả về lỗi hoặc thông báo
+            System.out.println("aaa");
+            return ResponseEntity.badRequest().body("Tên đăng nhập hặc mật khẩu không chính xác.");
+        }
+        return ResponseEntity.badRequest().body("Mật khẩu không chính xác");
     }
 }

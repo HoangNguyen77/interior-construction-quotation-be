@@ -7,4 +7,6 @@ import org.springframework.http.ResponseEntity;
 public interface IUserService {
     public ResponseEntity<?> register(User user);
     public ResponseEntity<?> enableAccount(String email, String enableCode);
+    public void changePassword(String username, String newPassword);
+    public void forgetPassword(String username, String email);
 }

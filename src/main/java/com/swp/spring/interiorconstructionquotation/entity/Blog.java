@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,14 +17,19 @@ public class Blog {
     @Column(name = "blog_id")
     private int blogId;
 
-    @Column(name = "descrription", columnDefinition = "LONGTEXT")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "title", columnDefinition = "TEXT")
     private String title;
 
     @Column(name = "created_date")
-    private Date createdDate;
+    private LocalDate createdDate; // Sử dụng LocalDate ở đây
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = LocalDate.now(); // Gán ngày hiện tại khi tạo entity
+    }
 
     @ManyToOne(
             cascade = {
