@@ -50,5 +50,5 @@ public class QuotationDetail {
             CascadeType.DETACH, CascadeType.REFRESH
     })
     @JoinColumn(name = "product_id")
-    private DetailProduct detailProduct;
+    private Product product;
 }

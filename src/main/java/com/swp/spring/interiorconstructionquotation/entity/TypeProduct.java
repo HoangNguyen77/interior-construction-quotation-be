@@ -25,5 +25,5 @@ public class TypeProduct {
     private CategoryProduct categoryProduct;
 
     @OneToOne(mappedBy = "typeProduct",cascade = CascadeType.ALL)
-    private DetailProduct detailProduct;
+    private Product product;
 }

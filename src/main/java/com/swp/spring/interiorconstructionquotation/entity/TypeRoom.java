@@ -2,6 +2,7 @@ package com.swp.spring.interiorconstructionquotation.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class TypeRoom {
     private int roomId;
 
     @Column(name = "room_name")
-    private int roomName;
+    private String roomName;
 
     @OneToMany(
             mappedBy = "typeRoom",

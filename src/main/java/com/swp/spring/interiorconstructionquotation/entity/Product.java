@@ -1,18 +1,26 @@
 package com.swp.spring.interiorconstructionquotation.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "detail_product")
+@Table(name = "product")
 @Data
-public class DetailProduct {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     private int productId;
+
+    @Column(name = "product_name")
+    private String name;
 
     @Column(name = "width")
     private double width;
@@ -34,7 +42,7 @@ public class DetailProduct {
     private TypeProduct typeProduct;
 
     @OneToMany(
-            mappedBy = "detailProduct",
+            mappedBy = "product",
             fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProductImage> productImageList;
 

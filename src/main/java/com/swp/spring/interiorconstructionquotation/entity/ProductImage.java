@@ -1,11 +1,13 @@
 package com.swp.spring.interiorconstructionquotation.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
 @Table(name = "product_image")
 @Data
+@Getter
+@Setter
 public class ProductImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +25,5 @@ public class ProductImage {
             }
     )
     @JoinColumn(name = "product_id", nullable = false)
-    private DetailProduct detailProduct;
+    private Product product;
 }
