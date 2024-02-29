@@ -40,7 +40,6 @@ public class Product {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "type_id")
     private TypeProduct typeProduct;
-
     @OneToMany(
             mappedBy = "product",
             fetch = FetchType.LAZY, cascade = CascadeType.ALL)
