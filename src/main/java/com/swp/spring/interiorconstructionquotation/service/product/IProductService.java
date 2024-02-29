@@ -12,6 +12,6 @@ public interface IProductService {
     Product createProduct(Product product);
     Product updateProduct(int id, Product updatedProduct);
     void deleteProduct(int id);
-    Page<Product> getRelatedProducts(int typeId, Pageable pageable);
+    Page<Product> getRelatedProductsByCategoryId(int typeId, Pageable pageable);
 
 }
