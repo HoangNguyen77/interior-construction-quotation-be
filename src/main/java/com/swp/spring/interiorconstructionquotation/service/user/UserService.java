@@ -119,4 +119,20 @@ public class UserService implements IUserService {
         iUserRepository.saveAndFlush(user);
         sendForgetPasswordEmail(username, email, tempPassword);
     }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> updateUserEnabledStatus(int userId, boolean enabled) {
+        try{
+            User user = iUserRepository.findByUserId(userId);
+            user.setEnabled(enabled);
+            iUserRepository.saveAndFlush(user);
+
+            return  ResponseEntity.ok().body("Change user status successfully");
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().
+                    body("Change failed due to an error: \" + e.getMessage()");
+        }
+    }
 }

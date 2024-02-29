@@ -9,4 +9,6 @@ public interface IUserService {
     public ResponseEntity<?> enableAccount(String email, String enableCode);
     public void changePassword(String username, String newPassword);
     public void forgetPassword(String username, String email);
+    public ResponseEntity<?> updateUserEnabledStatus(int userId, boolean enabled);
+
 }

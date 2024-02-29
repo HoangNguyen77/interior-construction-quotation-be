@@ -92,4 +92,25 @@ public class UserController {
         }
         return ResponseEntity.badRequest().body("Mật khẩu không chính xác");
     }
+
+    @PutMapping("/{userId}/disable")
+    public ResponseEntity<?> disableUser(@PathVariable int userId) {
+        try{
+            return iUserService.updateUserEnabledStatus(userId, false);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
+    }
+
+    @PutMapping("/{userId}/enable")
+    public ResponseEntity<?> enableUser(@PathVariable int userId) {
+        try{
+            return iUserService.updateUserEnabledStatus(userId, true);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
+    }
+
 }
