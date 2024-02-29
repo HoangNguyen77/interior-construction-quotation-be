@@ -1,20 +1,27 @@
 package com.swp.spring.interiorconstructionquotation.service.product;
 
+import com.swp.spring.interiorconstructionquotation.dao.ICategoryProductRepository;
 import com.swp.spring.interiorconstructionquotation.dao.IProductRepository;
+import com.swp.spring.interiorconstructionquotation.entity.CategoryProduct;
 import com.swp.spring.interiorconstructionquotation.entity.Product;
 import com.swp.spring.interiorconstructionquotation.entity.ProductImage;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductService implements IProductService{
     @Autowired
     private IProductRepository productRepository;
+    private ICategoryProductRepository categoryProductRepository;
 
     @Override
     public Page<Product> getAllProducts(int page, int pagesize) {
@@ -82,14 +89,17 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Page<Product> getRelatedProducts(int typeId, Pageable pageable) {
-        try {
-            // Implement logic to fetch related products based on category or any other criteria
-            return productRepository.findByTypeProduct_TypeId(typeId,pageable);
-        } catch (Exception e) {
-            // Log or handle unexpected exceptions
-            throw new RuntimeException("Failed to retrieve related products for category id: " + typeId, e);
+    public Page<Product> getRelatedProductsByCategoryId(int typeId, Pageable pageable) {
+        List<CategoryProduct> categoryProducts = categoryProductRepository.findByTypeRoom_RoomId(typeId);
+        if (categoryProducts.isEmpty()) {
+            // Handle scenario where no categoryProducts found for the given roomId
+            return new PageImpl<>(Collections.emptyList());
         }
+
+        List<Integer> typeIds = categoryProducts.stream()
+                .map(categoryProduct -> categoryProduct.getTypeRoom().getRoomId())
+                .collect(Collectors.toList());
+        return productRepository.findByTypeProduct_TypeId(typeId, pageable);
     }
 
 
