@@ -39,5 +39,5 @@ public class DesignConstruction {
             joinColumns = @JoinColumn(name = "design_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
-    private List<DetailProduct> detailProductList;
+    private List<Product> productList;
 }

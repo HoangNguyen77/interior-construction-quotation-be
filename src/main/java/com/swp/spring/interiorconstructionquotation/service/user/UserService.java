@@ -8,6 +8,7 @@ import com.swp.spring.interiorconstructionquotation.entity.User;
 import com.swp.spring.interiorconstructionquotation.service.email.EmailService;
 import com.swp.spring.interiorconstructionquotation.service.email.IEmailSerivce;
 import com.swp.spring.interiorconstructionquotation.service.user.IUserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -61,6 +62,7 @@ public class UserService implements IUserService {
 
         return ResponseEntity.ok("Đăng ký thành công!");
     }
+
     private String generateEnableCode(){
         return UUID.randomUUID().toString();
     }
@@ -71,7 +73,16 @@ public class UserService implements IUserService {
         String url = "http://localhost:5173/enable/"+email+"/"+enableCode;
         text+=("<br/> <a href="+url+">"+url+"</a> ");
 
-        iEmailService.sendEmail("hoangnhse173098@fpt.edu.vn", email, subject, text);
+        iEmailService.sendEmail("vivadecor88@gmail.com", email, subject, text);
+    }
+    private void sendForgetPasswordEmail(String username, String email, String tempPassword){
+        String subject = "Mật khẩu tạm thời của bạn tại VivaDecor";
+        String text = "Đây là mật khẩu tạm thời cho tài khoản <"+username+">:<html><body><br/><h1>"+tempPassword+"</h1></body></html>";
+        text+="<br/> Hãy đăng nhập để đổi mật khẩu: ";
+        String url = "http://localhost:5173/login";
+        text+=("<br/> <a href="+url+">"+url+"</a> ");
+
+        iEmailService.sendEmail("vivadecor88@gmail.com", email, subject, text);
     }
     @Override
     public ResponseEntity<?> enableAccount(String email, String enableCode) {
@@ -88,6 +99,40 @@ public class UserService implements IUserService {
             return ResponseEntity.ok("Kích hoạt tài khoản thành công!");
         } else {
             return ResponseEntity.badRequest().body(new Notification("Mã kích hoạt không chính xác"));
+        }
+    }
+    @Override
+    @Transactional
+    public void changePassword(String username, String newPassword){
+        User user = iUserRepository.findByUsername(username);
+        String newUserPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(newUserPassword);
+        iUserRepository.saveAndFlush(user);
+    }
+    @Override
+    @Transactional
+    public void forgetPassword(String username, String email){
+        String tempPassword = generateEnableCode();
+        String encryptPassword = passwordEncoder.encode(tempPassword);
+        User user = iUserRepository.findByUsername(username);
+        user.setPassword(encryptPassword);
+        iUserRepository.saveAndFlush(user);
+        sendForgetPasswordEmail(username, email, tempPassword);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> updateUserEnabledStatus(int userId, boolean enabled) {
+        try{
+            User user = iUserRepository.findByUserId(userId);
+            user.setEnabled(enabled);
+            iUserRepository.saveAndFlush(user);
+
+            return  ResponseEntity.ok().body("Change user status successfully");
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().
+                    body("Change failed due to an error: \" + e.getMessage()");
         }
     }
 }
