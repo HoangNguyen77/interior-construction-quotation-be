@@ -41,6 +41,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                 config -> config
+                        .requestMatchers(HttpMethod.POST, Endpoints.ADMIN_POST_ENDPOINTS).hasAuthority("ADMIN")
                         .anyRequest().permitAll()
 //                        .requestMatchers(HttpMethod.GET, Endpoints.PUBLIC_GET_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.POST, Endpoints.PUBLIC_POST_ENDPOINTS).permitAll()
@@ -56,6 +57,7 @@ public class SecurityConfiguration {
                 return corsConfig;
             });
         });
+        //jwtFilter
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement((session)->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.httpBasic(Customizer.withDefaults());

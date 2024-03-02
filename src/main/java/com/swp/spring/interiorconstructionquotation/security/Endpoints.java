@@ -11,7 +11,7 @@ public class Endpoints {
     public static final String[] STAFF_GET_ENDPOINTS = {
 
     };
-    public static final String[] STAFF_POST_ENDPOINTS = {
-
+    public static final String[] ADMIN_POST_ENDPOINTS = {
+        "/blogs/create-blog"
     };
 }
