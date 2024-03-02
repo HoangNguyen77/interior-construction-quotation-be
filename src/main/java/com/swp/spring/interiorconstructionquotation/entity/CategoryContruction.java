@@ -11,8 +11,8 @@ import java.util.List;
 public class CategoryContruction {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private int categoryId;
+    @Column(name = "construction_id")
+    private int construction_id;
 
     @Column(name = "category_name")
     private String categoryName;
@@ -20,5 +20,5 @@ public class CategoryContruction {
     @OneToMany(
             mappedBy = "categoryContruction",
             fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<DesignConstruction> designConstructionList;
+    private List<QuotationHeader> quotationHeaderList;
 }

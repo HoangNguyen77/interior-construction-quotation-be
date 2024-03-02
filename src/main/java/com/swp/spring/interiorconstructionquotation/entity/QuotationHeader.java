@@ -46,4 +46,10 @@ public class QuotationHeader {
             fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<QuotationList> list;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH
+    })
+    @JoinColumn(name = "construction_id", nullable = false)
+    private CategoryContruction categoryContruction;
 }

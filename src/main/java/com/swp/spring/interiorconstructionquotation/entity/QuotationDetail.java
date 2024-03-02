@@ -45,10 +45,12 @@ public class QuotationDetail {
     @JoinColumn(name = "list_id", nullable = false)
     private QuotationList quotationList;
 
-    @OneToOne(cascade = {
-            CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH
-    })
-    @JoinColumn(name = "product_id")
+    @ManyToOne(
+            cascade = {
+                    CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH
+            }
+    )
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 }
