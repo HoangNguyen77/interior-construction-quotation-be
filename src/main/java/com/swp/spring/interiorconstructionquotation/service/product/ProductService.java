@@ -88,19 +88,19 @@ public class ProductService implements IProductService{
         }
     }
 
-    @Override
-    public Page<Product> getRelatedProductsByCategoryId(int typeId, Pageable pageable) {
-        List<CategoryProduct> categoryProducts = categoryProductRepository.findByTypeRoom_RoomId(typeId);
-        if (categoryProducts.isEmpty()) {
-            // Handle scenario where no categoryProducts found for the given roomId
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        List<Integer> typeIds = categoryProducts.stream()
-                .map(categoryProduct -> categoryProduct.getTypeRoom().getRoomId())
-                .collect(Collectors.toList());
-        return productRepository.findByTypeProduct_TypeId(typeId, pageable);
-    }
+//    @Override
+//    public Page<Product> getRelatedProductsByCategoryId(int typeId, Pageable pageable) {
+//        List<CategoryProduct> categoryProducts = categoryProductRepository.findByTypeRoom_RoomId(typeId);
+//        if (categoryProducts.isEmpty()) {
+//            // Handle scenario where no categoryProducts found for the given roomId
+//            return new PageImpl<>(Collections.emptyList());
+//        }
+//
+//        List<Integer> typeIds = categoryProducts.stream()
+//                .map(categoryProduct -> categoryProduct.getTypeRoom().getRoomId())
+//                .collect(Collectors.toList());
+//        return productRepository.findByTypeProduct_TypeId(typeId, pageable);
+//    }
 
 
 }

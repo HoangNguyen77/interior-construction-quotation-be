@@ -14,6 +14,7 @@ public class CategoryController {
     public CategoryController(ICategoryService categoryService){
         this.categoryService = categoryService;
     }
+
     @PostMapping("/create-category")
     public ResponseEntity<?> createCategory(@RequestBody CategoryRequest categoryRequest){
         try {

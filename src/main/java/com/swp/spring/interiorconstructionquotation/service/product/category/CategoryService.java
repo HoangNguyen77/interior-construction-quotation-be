@@ -3,17 +3,22 @@ package com.swp.spring.interiorconstructionquotation.service.product.category;
 import com.swp.spring.interiorconstructionquotation.dao.ICategoryProductRepository;
 import com.swp.spring.interiorconstructionquotation.dao.ITypeRoomRepository;
 import com.swp.spring.interiorconstructionquotation.entity.*;
+import com.swp.spring.interiorconstructionquotation.service.blog.BlogRequest;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CategoryService implements ICategoryService {
     private ICategoryProductRepository categoryProductRepository;
     private ITypeRoomRepository typeRoomRepository;
+
     @Autowired
-    public CategoryService(ICategoryProductRepository categoryProductRepository, ITypeRoomRepository typeRoomRepository){
+    public CategoryService(ICategoryProductRepository categoryProductRepository, ITypeRoomRepository typeRoomRepository) {
         this.categoryProductRepository = categoryProductRepository;
         this.typeRoomRepository = typeRoomRepository;
     }
@@ -22,7 +27,7 @@ public class CategoryService implements ICategoryService {
     @Transactional
     public ResponseEntity<?> createCategory(CategoryRequest categoryRequest) {
         try {
-            if (typeRoomRepository.findByRoomId(categoryRequest.getRoomId()) != null){
+            if (typeRoomRepository.findByRoomId(categoryRequest.getRoomId()) != null) {
                 TypeRoom typeRoom = typeRoomRepository.findByRoomId(categoryRequest.getRoomId());
                 CategoryProduct categoryProduct = new CategoryProduct();
 
@@ -30,10 +35,10 @@ public class CategoryService implements ICategoryService {
                 categoryProduct.setCategoryName(categoryRequest.getCategoryName());
                 CategoryProduct createCategory = categoryProductRepository.save(categoryProduct);
                 return ResponseEntity.ok("Success");
-            }else{
+            } else {
                 return ResponseEntity.badRequest().body("Fail");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body("Fail");
         }
@@ -43,17 +48,24 @@ public class CategoryService implements ICategoryService {
     @Transactional
     public ResponseEntity<?> updateCategory(CategoryRequest categoryRequest) {
         try {
+            // Retrieve the existing category
             CategoryProduct category = categoryProductRepository.findById(categoryRequest.getCategoryId()).orElse(null);
             if (category == null) {
                 return ResponseEntity.badRequest().body("Category not found");
             }
 
+            // Retrieve the corresponding room type
             TypeRoom typeRoom = typeRoomRepository.findByRoomId(categoryRequest.getRoomId());
-            CategoryProduct categoryProduct = new CategoryProduct();
+            if (typeRoom == null) {
+                return ResponseEntity.badRequest().body("Room type not found");
+            }
 
-            categoryProduct.setTypeRoom(typeRoom);
-            categoryProduct.setCategoryName(categoryRequest.getCategoryName());
-            CategoryProduct createCategory = categoryProductRepository.saveAndFlush(categoryProduct);
+            // Update category properties
+            category.setTypeRoom(typeRoom);
+            category.setCategoryName(categoryRequest.getCategoryName());
+
+            // Save the updated category
+            categoryProductRepository.save(category);
 
             return ResponseEntity.ok().body("Category updated successfully");
         } catch (Exception e) {
