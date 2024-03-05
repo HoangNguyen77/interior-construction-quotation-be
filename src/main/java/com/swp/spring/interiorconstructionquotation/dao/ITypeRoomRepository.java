@@ -10,4 +10,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RepositoryRestResource(path = "type-room")
 public interface ITypeRoomRepository extends JpaRepository<TypeRoom, Integer> {
     Page<TypeRoom> findByRoomNameContaining(@RequestParam("name") String typeName, Pageable pageable);
+    public TypeRoom findByRoomId(int roomId);
 }

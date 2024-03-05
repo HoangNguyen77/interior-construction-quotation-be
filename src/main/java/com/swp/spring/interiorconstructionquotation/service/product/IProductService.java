@@ -1,6 +1,7 @@
 package com.swp.spring.interiorconstructionquotation.service.product;
 
 import com.swp.spring.interiorconstructionquotation.entity.Product;
+import com.swp.spring.interiorconstructionquotation.entity.TypeProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

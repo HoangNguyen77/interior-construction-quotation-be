@@ -12,4 +12,5 @@ import java.util.List;
 @RepositoryRestResource(path = "type-product")
 public interface ITypeProductRepository extends JpaRepository<TypeProduct, Integer> {
     Page<TypeProduct> findByCategoryProduct_CategoryId(@RequestParam int categoryId, Pageable pageable);
+    public TypeProduct findByTypeName(String typeName);
 }
