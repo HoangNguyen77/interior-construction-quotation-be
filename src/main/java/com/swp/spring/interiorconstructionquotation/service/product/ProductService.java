@@ -5,6 +5,7 @@ import com.swp.spring.interiorconstructionquotation.dao.IProductRepository;
 import com.swp.spring.interiorconstructionquotation.entity.CategoryProduct;
 import com.swp.spring.interiorconstructionquotation.entity.Product;
 import com.swp.spring.interiorconstructionquotation.entity.ProductImage;
+import com.swp.spring.interiorconstructionquotation.entity.TypeProduct;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

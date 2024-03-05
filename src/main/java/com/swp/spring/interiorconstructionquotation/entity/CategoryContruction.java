@@ -20,5 +20,5 @@ public class CategoryContruction {
     @OneToMany(
             mappedBy = "categoryContruction",
             fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<DesignConstruction> designConstructionList;
+    private List<QuotationHeader> quotationHeaders;
 }

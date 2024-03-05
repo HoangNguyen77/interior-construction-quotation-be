@@ -44,15 +44,4 @@ public class Product {
             mappedBy = "product",
             fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProductImage> productImageList;
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {
-            CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH
-    })
-    @JoinTable(
-            name = "product_design",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "design_id")
-    )
-    private List<DesignConstruction> designConstructionList;
 }
