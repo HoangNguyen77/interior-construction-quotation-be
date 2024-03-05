@@ -34,8 +34,8 @@ public class Product {
     @Column(name = "unit_price")
     private double unitPrice;
 
-    @Column(name = "unit")
-    private String unit;
+//    @Column(name = "unit")
+//    private String unit;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "type_id")
@@ -54,6 +54,14 @@ public class Product {
     })
     private List<QuotationDetail> quotationDetailList;
 
+    @ManyToOne(
+            cascade = {
+                    CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH
+            }
+    )
+    @JoinColumn(name = "unit_id", nullable = false)
+    private Unit unit;
 //    @ManyToMany(fetch = FetchType.LAZY, cascade = {
 //            CascadeType.PERSIST, CascadeType.MERGE,
 //            CascadeType.DETACH, CascadeType.REFRESH

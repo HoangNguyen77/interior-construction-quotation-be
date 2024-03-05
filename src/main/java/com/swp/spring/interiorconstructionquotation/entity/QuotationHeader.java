@@ -15,18 +15,6 @@ public class QuotationHeader {
     @Column(name = "header_id")
     private int headerId;
 
-    @Column(name = "created_date")
-    private Date createdDate;
-
-    @Column(name = "total_price")
-    private double totalPrice;
-
-    @Column(name = "quotation_name")
-    private String quotationName;
-
-    @Column(name = "is_signed")
-    private boolean isSigned;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH
@@ -38,7 +26,7 @@ public class QuotationHeader {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH
     })
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
     @OneToMany(

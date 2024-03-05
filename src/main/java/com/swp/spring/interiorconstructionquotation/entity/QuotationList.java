@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -16,16 +17,21 @@ public class QuotationList {
     private int listId;
 
     @Column(name = "created_date")
-    private Date createdDate;
+    private LocalDate createdDate; // Sử dụng LocalDate ở đây
 
-    @Column(name = "total_price")
-    private double totalPrice;
+    @PrePersist
+    protected void onCreate() {
+        createdDate = LocalDate.now(); // Gán ngày hiện tại khi tạo entity
+    }
 
-    @Column(name = "quotation_name")
-    private String quotationName;
+    @Column(name = "estimate_total_price")
+    private double estimateTotalPrice;
 
-    @Column(name = "is_signed")
-    private boolean isSigned;
+    @Column(name = "real_total_price")
+    private double realTotalPrice;
+
+    @Column(name = "is_constructed")
+    private boolean isConstructed;
 
     @ManyToOne(
             cascade = {
@@ -40,4 +46,16 @@ public class QuotationList {
             mappedBy = "quotationList",
             fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<QuotationDetail> quotationDetailList;
+
+    @ManyToOne(
+            cascade = {
+                    CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH
+            }
+    )
+    @JoinColumn(name = "status_id", nullable = false)
+    private Status status;
+
+    @OneToOne(mappedBy = "quotationList",cascade = CascadeType.ALL)
+    private FinishedProject finishedProject;
 }

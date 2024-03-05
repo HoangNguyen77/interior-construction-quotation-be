@@ -14,8 +14,8 @@ public class CategoryContruction {
     @Column(name = "construction_id")
     private int construction_id;
 
-    @Column(name = "category_name")
-    private String categoryName;
+    @Column(name = "construction_name")
+    private String constructionName;
 
     @OneToMany(
             mappedBy = "categoryContruction",

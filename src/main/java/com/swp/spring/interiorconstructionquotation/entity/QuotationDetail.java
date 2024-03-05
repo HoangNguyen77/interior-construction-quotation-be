@@ -3,6 +3,8 @@ package com.swp.spring.interiorconstructionquotation.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "quotation_detail")
 @Data
@@ -33,8 +35,14 @@ public class QuotationDetail {
     @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "total_price")
-    private double totalPrice;
+    @Column(name = "estimate_total_price")
+    private double estimateTotalPrice;
+
+    @Column(name = "real_total_price")
+    private double realTotalPrice;
+
+    @Column(name = "note", columnDefinition = "TEXT")
+    private String note;
 
     @ManyToOne(
             cascade = {
