@@ -107,10 +107,6 @@ public class UserController {
     @PutMapping("/{userId}/disable")
     public ResponseEntity<?> disableUser(@PathVariable int userId) {
         try {
-
-            User user = iUserRepository.findByUserId(userId);
-            userService.sendBanEmail(user.getEmail());
-
             return iUserService.updateUserEnabledStatus(userId, false);
         } catch (Exception e) {
             System.out.println(e.getMessage());
