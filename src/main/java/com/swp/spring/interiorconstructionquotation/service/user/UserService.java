@@ -123,16 +123,23 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public ResponseEntity<?> updateUserEnabledStatus(int userId, boolean enabled) {
-        try{
+        try {
             User user = iUserRepository.findByUserId(userId);
             user.setEnabled(enabled);
             iUserRepository.saveAndFlush(user);
 
-            return  ResponseEntity.ok().body("Change user status successfully");
-        } catch (Exception e){
+            return ResponseEntity.ok().body("Change user status successfully");
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().
                     body("Change failed due to an error: \" + e.getMessage()");
         }
+    }
+    public void sendBanEmail(String email) {
+        String subject = "Tài khoản của bạn đã bị ban tại VivaDecod";
+        String text = "Tài khoản của bạn đã bị ban tại VivaDecod, vui lòng liên hệ qua email" +
+                ": vivadecor88@gmail.com để biết thêm chi tiết! ";
+
+        iEmailService.sendEmail("vivadecor88@gmail.com", email, subject, text);
     }
 }
