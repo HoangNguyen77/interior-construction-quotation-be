@@ -1,12 +1,16 @@
 package com.swp.spring.interiorconstructionquotation.controller;
 
+import com.swp.spring.interiorconstructionquotation.dao.IUserRepository;
 import com.swp.spring.interiorconstructionquotation.entity.User;
 import com.swp.spring.interiorconstructionquotation.security.ChangePasswordRequest;
 import com.swp.spring.interiorconstructionquotation.security.ForgetPasswordRequest;
 import com.swp.spring.interiorconstructionquotation.security.JwtResponse;
 import com.swp.spring.interiorconstructionquotation.security.LoginRequest;
 import com.swp.spring.interiorconstructionquotation.service.JWT.JwtService;
+import com.swp.spring.interiorconstructionquotation.service.email.IEmailSerivce;
 import com.swp.spring.interiorconstructionquotation.service.user.IUserService;
+import com.swp.spring.interiorconstructionquotation.service.user.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.http.ResponseEntity;
@@ -25,67 +29,74 @@ public class UserController {
     private IUserService iUserService;
 
     @Autowired
+    private UserService userService;
+    @Autowired
     private AuthenticationManager authenticationManager;
-
-
+    @Autowired
+    private IUserRepository iUserRepository;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private IEmailSerivce iEmailService;
 
     // Allow requests from 'http://localhost:3000'
 
     @GetMapping("/enable")
-    public ResponseEntity<?> enableAccount(@RequestParam String email, @RequestParam String enableCode){
+    public ResponseEntity<?> enableAccount(@RequestParam String email, @RequestParam String enableCode) {
         ResponseEntity<?> response = iUserService.enableAccount(email, enableCode);
         return response;
     }
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Validated @RequestBody User user){
+    public ResponseEntity<?> register(@Validated @RequestBody User user) {
         ResponseEntity<?> response = iUserService.register(user);
         return response;
     }
+
     @PostMapping("/forget-password")
-    public ResponseEntity<?> forgetPassword(@RequestBody ForgetPasswordRequest forgetPasswordRequest){
+    public ResponseEntity<?> forgetPassword(@RequestBody ForgetPasswordRequest forgetPasswordRequest) {
         try {
             iUserService.forgetPassword(forgetPasswordRequest.getUsername(), forgetPasswordRequest.getEmail());
             return ResponseEntity.ok("Gửi email thành công!");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body("Đã xảy ra lỗi trong quá trình xử lý");
         }
 
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         // Xác thực người dùng bằng tên đăng nhập và mật khẩu
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
             // Nếu xác thực thành công, tạo token JWT
-            if(authentication.isAuthenticated()){
+            if (authentication.isAuthenticated()) {
                 final String jwt = jwtService.generateToken(loginRequest.getUsername());
                 System.out.println(jwt);
                 return ResponseEntity.ok(new JwtResponse(jwt));
             }
-        }catch (AuthenticationException e){
+        } catch (AuthenticationException e) {
             // Xác thực không thành công, trả về lỗi hoặc thông báo
             System.out.println("aaa");
             return ResponseEntity.badRequest().body("Tên đăng nhập hặc mật khẩu không chính xác.");
         }
         return ResponseEntity.badRequest().body("Xác thực không thành công.");
     }
+
     @PutMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest){
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         // Xác thực người dùng bằng tên đăng nhập và mật khẩu
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(changePasswordRequest.getUsername(), changePasswordRequest.getOldPassword())
             );
-            if(authentication.isAuthenticated()){
+            if (authentication.isAuthenticated()) {
                 iUserService.changePassword(changePasswordRequest.getUsername(), changePasswordRequest.getNewPassword());
                 return ResponseEntity.ok("Đổi mật khẩu thành công!");
             }
-        }catch (AuthenticationException e){
+        } catch (AuthenticationException e) {
             // Xác thực không thành công, trả về lỗi hoặc thông báo
             System.out.println("aaa");
             return ResponseEntity.badRequest().body("Tên đăng nhập hặc mật khẩu không chính xác.");
@@ -93,30 +104,31 @@ public class UserController {
         return ResponseEntity.badRequest().body("Mật khẩu không chính xác");
     }
 
-
-    @Override
-    @Transactional
-    public ResponseEntity<?> updateUserEnabledStatus(int userId, boolean enabled) {
+    @PutMapping("/{userId}/disable")
+    public ResponseEntity<?> disableUser(@PathVariable int userId) {
         try {
-            User user = iUserRepository.findByUserId(userId);
-            user.setEnabled(enabled);
-            iUserRepository.saveAndFlush(user);
 
-            return ResponseEntity.ok().body("Change user status successfully");
+            User user = iUserRepository.findByUserId(userId);
+            userService.sendBanEmail(user.getEmail());
+
+            return iUserService.updateUserEnabledStatus(userId, false);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().
-                    body("Change failed due to an error: \" + e.getMessage()");
+            return ResponseEntity.badRequest().body("Fail");
         }
     }
 
-    public void sendNudeEmail(String email) {
-        String subject = "Tài khoản của bạn đã bị ban tại VivaDecod";
-        String text = "Tài khoản của bạn đã bị ban tại VivaDecod, vui lòng liên hệ qua email" +
-                ": vivadecor88@gmail.com để biết thêm chi tiết! ";
-
-        iEmailService.sendEmail("vivadecor88@gmail.com", email, subject, text);
+    @PutMapping("/{userId}/enable")
+    public ResponseEntity<?> enableUser(@PathVariable int userId) {
+        try {
+            return iUserService.updateUserEnabledStatus(userId, true);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
     }
 
-    
+
+
+
 }
