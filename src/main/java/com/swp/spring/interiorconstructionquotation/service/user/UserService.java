@@ -126,6 +126,10 @@ public class UserService implements IUserService {
         try {
             User user = iUserRepository.findByUserId(userId);
             user.setEnabled(enabled);
+
+            if(!enabled){
+                sendBanEmail(user.getEmail());
+            }
             iUserRepository.saveAndFlush(user);
 
             return ResponseEntity.ok().body("Change user status successfully");
@@ -135,6 +139,9 @@ public class UserService implements IUserService {
                     body("Change failed due to an error: \" + e.getMessage()");
         }
     }
+
+
+
     public void sendBanEmail(String email) {
         String subject = "Tài khoản của bạn đã bị ban tại VivaDecod";
         String text = "Tài khoản của bạn đã bị ban tại VivaDecod, vui lòng liên hệ qua email" +
