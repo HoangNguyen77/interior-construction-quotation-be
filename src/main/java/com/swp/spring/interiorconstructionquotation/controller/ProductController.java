@@ -1,7 +1,7 @@
 package com.swp.spring.interiorconstructionquotation.controller;
 
-import com.swp.spring.interiorconstructionquotation.entity.Product;
-import com.swp.spring.interiorconstructionquotation.entity.TypeProduct;
+
+import com.swp.spring.interiorconstructionquotation.service.product.ProductRequest;
 import com.swp.spring.interiorconstructionquotation.service.product.ProductService;
 import com.swp.spring.interiorconstructionquotation.service.product.typeProduct.TypeProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,20 +13,30 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/products")
 public class ProductController {
     private ProductService productService;
-    private TypeProductService typeProductService;
     @Autowired
-    public ProductController(ProductService productService, TypeProductService typeProductService){
+    public ProductController(ProductService productService){
         this.productService = productService;
-        this.typeProductService = typeProductService;
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product){
+    public ResponseEntity<?> createProduct(@RequestBody ProductRequest productRequest){
         try {
-            return new ResponseEntity<>(productService.createProduct(product), HttpStatus.CREATED);
+            return productService.createProduct(productRequest);
         } catch (Exception e) {
-            // Log or handle specific exceptions
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
         }
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateBlog(@RequestBody ProductRequest productRequest){
+        try{
+            return productService.updateProduct(productRequest);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
+    }
+
+
 }
