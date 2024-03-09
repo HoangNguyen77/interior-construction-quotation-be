@@ -3,7 +3,6 @@ package com.swp.spring.interiorconstructionquotation.service.product.category;
 import com.swp.spring.interiorconstructionquotation.dao.ICategoryProductRepository;
 import com.swp.spring.interiorconstructionquotation.dao.ITypeRoomRepository;
 import com.swp.spring.interiorconstructionquotation.entity.*;
-import com.swp.spring.interiorconstructionquotation.service.blog.BlogRequest;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
