@@ -15,6 +15,7 @@ import java.util.Objects;
 @RepositoryRestResource(path = "category-product")
 public interface ICategoryProductRepository extends JpaRepository<CategoryProduct, Integer> {
     List<CategoryProduct> findByTypeRoom_RoomId(@RequestParam int roomId);
+    public CategoryProduct findByCategoryId(int categoryId);
     @Query("SELECT c.categoryId as categoryId, c.categoryName as categoryName, r.roomId as roomId FROM CategoryProduct c join c.typeRoom r WHERE c.categoryId = ?1")
     Map<String, Objects> findCategoryWithRoomById(int categoryId);
 

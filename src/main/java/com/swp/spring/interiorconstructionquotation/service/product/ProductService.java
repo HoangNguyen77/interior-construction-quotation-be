@@ -1,17 +1,15 @@
 package com.swp.spring.interiorconstructionquotation.service.product;
 
-import com.swp.spring.interiorconstructionquotation.dao.ICategoryProductRepository;
-import com.swp.spring.interiorconstructionquotation.dao.IProductRepository;
-import com.swp.spring.interiorconstructionquotation.entity.CategoryProduct;
-import com.swp.spring.interiorconstructionquotation.entity.Product;
-import com.swp.spring.interiorconstructionquotation.entity.ProductImage;
-import com.swp.spring.interiorconstructionquotation.entity.TypeProduct;
+import com.swp.spring.interiorconstructionquotation.dao.*;
+import com.swp.spring.interiorconstructionquotation.entity.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -20,9 +18,24 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductService implements IProductService{
-    @Autowired
+
     private IProductRepository productRepository;
     private ICategoryProductRepository categoryProductRepository;
+    private IUnitRepostitory unitRepostitory;
+    private ITypeProductRepository typeProductRepository;
+    private IProductImageRepository productImageRepository;
+    @Autowired
+    public ProductService(IProductRepository productRepository, ICategoryProductRepository categoryProductRepository, IUnitRepostitory unitRepostitory, ITypeProductRepository typeProductRepository, IProductImageRepository productImageRepository) {
+        this.productRepository = productRepository;
+        this.categoryProductRepository = categoryProductRepository;
+        this.unitRepostitory = unitRepostitory;
+        this.typeProductRepository = typeProductRepository;
+        this.productImageRepository = productImageRepository;
+    }
+
+
+
+
 
     @Override
     public Page<Product> getAllProducts(int page, int pagesize) {
@@ -49,33 +62,88 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Product createProduct(Product product) {
-        try {
-            return productRepository.save(product);
-        } catch (Exception e) {
-            // Log or handle unexpected exceptions
-            throw new RuntimeException("Failed to create product", e);
+    @Transactional
+    public ResponseEntity<?> createProduct(ProductRequest productRequest) {
+            try {
+                if (categoryProductRepository.findByCategoryId(productRequest.getCategoryId()) != null){
+                    CategoryProduct categoryProduct = categoryProductRepository.findByCategoryId(productRequest.getCategoryId());
+                    TypeProduct typeProduct = new TypeProduct();
+                    Product product = new Product();
+
+                    Unit unit = unitRepostitory.findByUnitId(productRequest.getUnitId());
+                    //
+                    typeProduct.setTypeName(productRequest.getTypeName());
+                    typeProduct.setCategoryProduct(categoryProduct);
+                    TypeProduct createdTypeProduct = typeProductRepository.save(typeProduct);
+                    product.setName(productRequest.getName());
+                    product.setWidth(productRequest.getWidth());
+                    product.setLength(productRequest.getLength());
+                    product.setHeight(productRequest.getHeight());
+                    product.setUnitPrice(productRequest.getUnitPrice());
+                    product.setUnit(unit);
+                    product.setTypeProduct(createdTypeProduct);
+                    Product createdProduct = productRepository.save(product);
+                    //blog image
+                    for (String image : productRequest.getProductImageList()){
+                        ProductImage productImage = new ProductImage();
+                        productImage.setProduct(createdProduct);
+                        productImage.setImageData(image);
+                        ProductImage createdProductImage = productImageRepository.save(productImage);
+                    }
+                    return ResponseEntity.ok("Success");
+                }else{
+                    return ResponseEntity.badRequest().body("Fail");
+                }
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                return ResponseEntity.badRequest().body("Fail");
+            }
         }
-    }
+
 
 
     @Override
-    public Product updateProduct(int id, Product updatedProduct) {
+    @Transactional
+    public ResponseEntity<?> updateProduct(ProductRequest productRequest) {
         try {
-            Product product = getProductById(id);
-            // Update product properties
-            product.setName(updatedProduct.getName());
-            product.setWidth(updatedProduct.getWidth());
-            product.setLength(updatedProduct.getLength());
-            product.setHeight(updatedProduct.getHeight());
-            product.setUnitPrice(updatedProduct.getUnitPrice());
-            product.setUnit(updatedProduct.getUnit());
-            return productRepository.save(product);
-        } catch (EntityNotFoundException e) {
-            throw e; // Re-throw EntityNotFoundException
+            // Retrieve the existing product
+            Product product = productRepository.findByProductId(productRequest.getProductId());
+            if (product == null) {
+                return ResponseEntity.badRequest().body("Product not found");
+            }
+            TypeProduct typeProduct = product.getTypeProduct();
+            CategoryProduct categoryProduct = typeProduct.getCategoryProduct();
+            CategoryProduct newCategoryProduct = categoryProductRepository.findByCategoryId(productRequest.getCategoryId());
+            Unit unit = unitRepostitory.findByUnitId(productRequest.getUnitId());
+
+
+            //Update product
+            typeProduct.setTypeName(productRequest.getTypeName());
+            typeProduct.setCategoryProduct(newCategoryProduct);
+            TypeProduct createdTypeProduct = typeProductRepository.saveAndFlush(typeProduct);
+            product.setName(productRequest.getName());
+            product.setWidth(productRequest.getWidth());
+            product.setLength(productRequest.getLength());
+            product.setHeight(productRequest.getHeight());
+            product.setUnitPrice(productRequest.getUnitPrice());
+            product.setUnit(unit);
+            product.setTypeProduct(createdTypeProduct);
+            Product updatedProduct = productRepository.saveAndFlush(product);
+
+            List<ProductImage> existingImages = productImageRepository.findByProduct_ProductId(updatedProduct.getProductId());
+            productImageRepository.deleteAll(existingImages);
+
+            //save new image
+            for (String imageData: productRequest.getProductImageList()){
+                ProductImage newImage = new ProductImage();
+                newImage.setProduct(product);
+                newImage.setImageData(imageData);
+                productImageRepository.save(newImage);
+            }
+            return ResponseEntity.ok().body("product updated successfully");
         } catch (Exception e) {
-            // Log or handle unexpected exceptions
-            throw new RuntimeException("Failed to update product with id: " + id, e);
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Update failed due to an error: " + e.getMessage());
         }
     }
 

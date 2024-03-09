@@ -4,15 +4,15 @@ import com.swp.spring.interiorconstructionquotation.entity.Product;
 import com.swp.spring.interiorconstructionquotation.entity.TypeProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface IProductService {
     Page<Product> getAllProducts(int page, int pagesize);
     Product getProductById(int id);
-    Product createProduct(Product product);
-    Product updateProduct(int id, Product updatedProduct);
+    ResponseEntity<?> createProduct(ProductRequest productRequest);
+    ResponseEntity<?> updateProduct(ProductRequest productRequest);
     void deleteProduct(int id);
     Page<Product> getRelatedProductsByCategoryId(int typeId, Pageable pageable);
-
 }

@@ -13,4 +13,6 @@ import java.util.List;
 public interface IProductRepository extends JpaRepository<Product, Integer> {
     Page<Product> findByTypeProduct_TypeId(@RequestParam int typeId, Pageable pageable);
     Page<Product> findByNameContaining(@RequestParam("name") String name, Pageable pageable);
+
+    public Product findByProductId(int productId);
 }

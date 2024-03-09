@@ -30,4 +30,15 @@ public interface IUserRepository extends JpaRepository<User, Integer> {
     Page<User> searchUsers(@Param("keyword") String keyword, @Param("filterBy") String filterBy, Pageable pageable);
     @Query(value = "SELECT u FROM User u JOIN u.roles r WHERE r.name = 'CUSTOMER'")
     Page<User> findByRoleNameIsCustomer(Pageable pageable);
+
+    @Query("SELECT u FROM User u JOIN u.roles r WHERE " +
+            "(:keyword is null OR " +
+            "(u.username LIKE %:keyword% OR " +
+            "u.firstName LIKE %:keyword% OR " +
+            "u.lastName LIKE %:keyword% OR " +
+            "u.phonenumber LIKE %:keyword%)) " +
+            "AND (:filterBy = 'all' OR (:filterBy = 'active' AND u.enabled = true) OR (:filterBy = 'disabled' AND u.enabled = false)) " +
+            "AND r.name = 'CUSTOMER'")
+    Page<User> searchUsers(@Param("keyword") String keyword, @Param("filterBy") String filterBy, Pageable pageable);
+
 }
