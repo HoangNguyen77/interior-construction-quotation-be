@@ -61,7 +61,6 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Đã xảy ra lỗi trong quá trình xử lý");
         }
-
     }
 
     @PostMapping("/login")
