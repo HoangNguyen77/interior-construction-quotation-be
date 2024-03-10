@@ -136,7 +136,7 @@ public class UserService implements IUserService {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().
-                    body("Change failed due to an error: \" + e.getMessage()");
+                    body("Change failed due to an error: " + e.getMessage());
         }
     }
 

@@ -18,6 +18,7 @@ public class BlogController {
     public BlogController(IBlogService iBlogService) {
         this.iBlogService = iBlogService;
     }
+
     @PostMapping("/create-blog")
     public ResponseEntity<?> createBlog(@RequestBody BlogRequest blogRequest){
         try {
