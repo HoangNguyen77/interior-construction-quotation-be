@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IProductService {
     Page<Product> getAllProducts(int page, int pagesize);
-    Product getProductById(int id);
+//    ResponseEntity<?>  getProductById(ProductRequest productRequest, int id);
     ResponseEntity<?> createProduct(ProductRequest productRequest);
     ResponseEntity<?> updateProduct(ProductRequest productRequest);
     void deleteProduct(int id);

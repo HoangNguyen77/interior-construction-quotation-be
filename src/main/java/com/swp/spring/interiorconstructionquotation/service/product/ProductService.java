@@ -48,18 +48,25 @@ public class ProductService implements IProductService{
         }
     }
 
-    @Override
-    public Product getProductById(int id) {
-        try {
-            return productRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
-        } catch (EntityNotFoundException e) {
-            throw e; // Re-throw EntityNotFoundException
-        } catch (Exception e) {
-            // Log or handle unexpected exceptions
-            throw new RuntimeException("Failed to retrieve product with id: " + id, e);
-        }
-    }
+//    @Override
+//    @Transactional
+//    public ResponseEntity<?> getProductById(ProductRequest productRequest, int id) {
+//        try {
+//            Product product = productRepository.findByProductId(productRequest.getProductId());
+//            if (product == null) {
+//                return ResponseEntity.badRequest().body("Product not found");
+//            }
+//            TypeProduct typeProduct = product.getTypeProduct();
+//            CategoryProduct categoryProduct = typeProduct.getCategoryProduct();
+//            Unit unit = unitRepostitory.findByUnitId(productRequest.getUnitId());
+//
+//        } catch (EntityNotFoundException e) {
+//            throw e; // Re-throw EntityNotFoundException
+//        } catch (Exception e) {
+//            // Log or handle unexpected exceptions
+//            throw new RuntimeException("Failed to retrieve product with id: " + id, e);
+//        }
+//    }
 
     @Override
     @Transactional
