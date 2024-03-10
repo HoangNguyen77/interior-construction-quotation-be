@@ -2,17 +2,36 @@ package com.swp.spring.interiorconstructionquotation.dao;
 
 import com.swp.spring.interiorconstructionquotation.entity.QuotationList;
 import com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import java.util.List;
 
 @RepositoryRestResource(path = "quotation-list")
 public interface IQuotationListRepository extends JpaRepository<QuotationList, Integer> {
     public QuotationList findByListId(int quotationListId);
 
+    @Transactional
+    @Modifying
+    @Query(value = "update quotation_list set status_id = ?2 where list_id = ?1", nativeQuery = true)
+    void updateStatus(int listID, int statusID);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update quotation_list set status_id = 3, real_total_price = ?2 where list_id = ?1", nativeQuery = true)
+    void updateQuotationListTotalPrice(int listID, double total);
+
+    @Transactional
+    @Modifying
+    @Query(value = "insert into quotation_list(list_id, created_date, estimate_total_price, real_total_price, is_constructed, header_id, status_id) " +
+            "values (?1, current_timestamp, ?2, 0, ?3, ?4, ?5)", nativeQuery = true)
+    void createQuotationList(int listID, double estimateTotalPrice, boolean isConstructed, int headerID, int statusID);
 
     @Query("SELECT ql FROM QuotationList ql " +
             "WHERE ql.quotationHeader.headerId = :headerId " +
@@ -30,4 +49,14 @@ public interface IQuotationListRepository extends JpaRepository<QuotationList, I
             "AND (:keyword is null OR CONCAT(u.firstName, ' ', u.lastName) LIKE %:keyword%) " +
             "AND ql.isConstructed = :isConstructed")
     Page<QuotationDoneRequest> findAllByStatusIdIs4(@Param("keyword") String keyword, @Param("isConstructed") boolean isConstructed, Pageable pageable);
+    @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest" +
+            "(qh.headerId, u.firstName, u.lastName, ql.createdDate, cc.constructionName, ql.isConstructed, ql.listId) " +
+            "FROM QuotationHeader qh " +
+            "INNER JOIN User u ON qh.customer.userId = u.userId " +
+            "INNER JOIN CategoryContruction cc ON qh.categoryContruction.construction_id = cc.construction_id " +
+            "INNER JOIN QuotationList ql ON qh.headerId = ql.quotationHeader.headerId " +
+            "INNER JOIN Status s ON ql.status.statusId = s.statusId " +
+            "WHERE s.statusId = 4 " +
+            "AND (:keyword is null OR CONCAT(u.firstName, ' ', u.lastName) LIKE %:keyword%) ")
+    Page<QuotationDoneRequest> findAllByStatusIdIs4WithoutConstructed(@Param("keyword") String keyword, Pageable pageable);
 }
