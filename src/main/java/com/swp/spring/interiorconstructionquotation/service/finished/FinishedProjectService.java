@@ -21,7 +21,7 @@ public class FinishedProjectService implements IFinishedProjectService {
     private IQuotationListRepository iQuotationListRepository;
     private IFinishedRepository iFinishedRepository;
     private IFinishedImageRepository iFinishedImageRepository;
-
+    @Autowired
     public FinishedProjectService(IQuotationListRepository iQuotationListRepository, IFinishedRepository iFinishedRepository, IFinishedImageRepository iFinishedImageRepository) {
         this.iQuotationListRepository = iQuotationListRepository;
         this.iFinishedRepository = iFinishedRepository;
@@ -32,7 +32,10 @@ public class FinishedProjectService implements IFinishedProjectService {
             String keyword, boolean isConstructed, Pageable pageable) {
         return iQuotationListRepository.findAllByStatusIdIs4(keyword, isConstructed, pageable);
     }
-
+    public Page<QuotationDoneRequest> findAllByStatus(
+            String keyword, Pageable pageable) {
+        return iQuotationListRepository.findAllByStatusIdIs4WithoutConstructed(keyword, pageable);
+    }
     @Override
     @Transactional
     public ResponseEntity<?> updateIsConstruction(int headerId){

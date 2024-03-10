@@ -28,6 +28,12 @@ public class FinishedProjectController {
             @PageableDefault(size = 5) Pageable pageable) {
         return finishedProjectService.findAllByStatusAndConstruction(keyword, isConstructed, pageable);
     }
+    @GetMapping("/quotation-without-construct")
+    public Page<QuotationDoneRequest> getQuotationsByStatus(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @PageableDefault(size = 5) Pageable pageable) {
+        return finishedProjectService.findAllByStatus(keyword, pageable);
+    }
 
     @PutMapping("/construct/{headerId}")
     public ResponseEntity<?> changeIsConstructedQuotationList(@PathVariable int headerId){
