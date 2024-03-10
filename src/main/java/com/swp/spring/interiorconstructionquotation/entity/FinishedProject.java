@@ -38,6 +38,7 @@ public class FinishedProject {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH
     })
+
     @JoinColumn(name = "list_id")
     private QuotationList quotationList;
 }

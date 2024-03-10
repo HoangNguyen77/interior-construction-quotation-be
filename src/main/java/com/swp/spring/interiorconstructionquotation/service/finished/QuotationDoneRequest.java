@@ -16,10 +16,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class QuotationDoneRequest {
     private int headerId;
-    private int listId;
     private String firstName;
     private String lastName;
     private LocalDate createdDate;
     private String constructionName;
     private boolean isConstructed;
+    private int listId;
 }

@@ -6,12 +6,8 @@ import com.swp.spring.interiorconstructionquotation.dao.IUserRepository;
 import com.swp.spring.interiorconstructionquotation.entity.Blog;
 import com.swp.spring.interiorconstructionquotation.entity.BlogImage;
 import com.swp.spring.interiorconstructionquotation.entity.User;
-import com.swp.spring.interiorconstructionquotation.service.user.IUserService;
 import jakarta.transaction.Transactional;
-import org.apache.catalina.filters.RemoteIpFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

@@ -1,5 +1,6 @@
 package com.swp.spring.interiorconstructionquotation.dao;
 
+import com.swp.spring.interiorconstructionquotation.entity.CategoryProduct;
 import com.swp.spring.interiorconstructionquotation.entity.TypeProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,4 +14,7 @@ import java.util.List;
 public interface ITypeProductRepository extends JpaRepository<TypeProduct, Integer> {
     Page<TypeProduct> findByCategoryProduct_CategoryId(@RequestParam int categoryId, Pageable pageable);
     public TypeProduct findByTypeName(String typeName);
+    public TypeProduct findByTypeId(int typeId);
+
+    public TypeProduct findTypeProductByProduct_ProductId(int productId);
 }

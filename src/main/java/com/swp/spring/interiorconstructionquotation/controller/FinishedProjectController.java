@@ -1,24 +1,24 @@
 package com.swp.spring.interiorconstructionquotation.controller;
 
 import com.swp.spring.interiorconstructionquotation.service.finished.FinishedProjectService;
+import com.swp.spring.interiorconstructionquotation.service.finished.IFinishedProjectService;
 import com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.swp.spring.interiorconstructionquotation.service.finished.FinishedProjectRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/finished")
 public class FinishedProjectController {
     private FinishedProjectService finishedProjectService;
+    private IFinishedProjectService iFinishedService;
 
-    @Autowired
-    public FinishedProjectController(FinishedProjectService finishedProjectService) {
+    public FinishedProjectController(FinishedProjectService finishedProjectService, IFinishedProjectService iFinishedService) {
         this.finishedProjectService = finishedProjectService;
+        this.iFinishedService = iFinishedService;
     }
 
     @GetMapping("/quotation")
@@ -28,10 +28,34 @@ public class FinishedProjectController {
             @PageableDefault(size = 5) Pageable pageable) {
         return finishedProjectService.findAllByStatusAndConstruction(keyword, isConstructed, pageable);
     }
-    @GetMapping("/quotation-without-construct")
-    public Page<QuotationDoneRequest> getQuotationsByStatus(
-            @RequestParam(value = "keyword", required = false) String keyword,
-            @PageableDefault(size = 5) Pageable pageable) {
-        return finishedProjectService.findAllByStatus(keyword, pageable);
+
+    @PutMapping("/construct/{headerId}")
+    public ResponseEntity<?> changeIsConstructedQuotationList(@PathVariable int headerId){
+        try{
+            return finishedProjectService.updateIsConstruction(headerId);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
+    }
+
+    @PostMapping("/create-project")
+    public ResponseEntity<?> createProject (@RequestBody FinishedProjectRequest finishedProjectRequest){
+        try{
+            return iFinishedService.createFinishedProject(finishedProjectRequest);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
+    }
+
+    @PutMapping("/update-project")
+    public ResponseEntity<?> updateProject (@RequestBody FinishedProjectRequest finishedProjectRequest){
+        try{
+            return iFinishedService.updateFinishedProject(finishedProjectRequest);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
     }
 }

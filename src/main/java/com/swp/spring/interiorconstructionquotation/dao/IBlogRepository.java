@@ -16,7 +16,10 @@ import java.util.Objects;
 public interface IBlogRepository extends JpaRepository<Blog, Integer> {
     Page<Blog> findByTitleContaining(@RequestParam("title") String title, Pageable pageable);
     public Blog findByBlogId(int blogId);
-    @Query("SELECT b.blogId as blogId, b.title as title, b.description as description, b.createdDate as createdDate, u.firstName as firstName, u.lastName as lastName FROM Blog b join b.user u WHERE b.blogId = ?1")
+    @Query("SELECT b.blogId as blogId, b.title as title, b.description as description, b.createdDate " +
+            "as createdDate, u.firstName as firstName, u.lastName as lastName" +
+            " FROM Blog b join b.user u" +
+            " WHERE b.blogId = ?1")
     Map<String, Objects> findBlogWithUserNameByBlogId(int blogId);
 
 //    @Query("SELECT b.blogId AS blogId, b.title AS title, b.description AS description, b.user.firstName as firstName, b.user.lastName as lastName FROM Blog b")
