@@ -39,7 +39,6 @@ public class ProductRequest {
         this.categoryId = categoryId;
         this.productImageList = productImageList;
     }
-
     public ProductRequest(int productId, String name, double width, double length, double height, double unitPrice, int unitId, int typeId, String typeName, int categoryId, int roomId) {
         this.productId = productId;
         this.name = name;
