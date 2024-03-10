@@ -24,5 +24,6 @@ public interface IBlogRepository extends JpaRepository<Blog, Integer> {
 
 //    @Query("SELECT b.blogId AS blogId, b.title AS title, b.description AS description, b.user.firstName as firstName, b.user.lastName as lastName FROM Blog b")
 //    List<Map<String, Object>> findBlogsWithIdTitleAndDescription();
-
+    @Query(value = "SELECT * FROM Blog b WHERE  b.blog_id <> ?1 ORDER BY RAND() LIMIT 3", nativeQuery = true)
+    List<Blog> findRandomThreeBlogs(int blogId);
 }

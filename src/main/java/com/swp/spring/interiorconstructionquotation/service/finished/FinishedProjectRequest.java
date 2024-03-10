@@ -1,7 +1,5 @@
-package com.swp.spring.interiorconstructionquotation.service.project;
+package com.swp.spring.interiorconstructionquotation.service.finished;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FinishedRequest {
+public class FinishedProjectRequest {
     private int projectId;
     private String title;
     private String content;
