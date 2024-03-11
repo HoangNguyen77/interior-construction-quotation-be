@@ -22,4 +22,5 @@ public class QuotationDoneRequest {
     private String constructionName;
     private boolean isConstructed;
     private int listId;
+    private boolean hasProject;
 }
