@@ -16,6 +16,8 @@ import java.util.List;
 @RepositoryRestResource(path = "quotation-list")
 public interface IQuotationListRepository extends JpaRepository<QuotationList, Integer> {
     public QuotationList findByListId(int quotationListId);
+    @Query("SELECT COUNT(fp) > 0 FROM FinishedProject fp WHERE fp.quotationList.listId = :listId")
+    boolean existsFinishedProjectByListId(@Param("listId") int listId);
 
     @Transactional
     @Modifying
@@ -39,24 +41,25 @@ public interface IQuotationListRepository extends JpaRepository<QuotationList, I
     QuotationList findByHeaderIdAndStatusIdIs4(@Param("headerId") int headerId);
 
     @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest" +
-            "(qh.headerId, u.firstName, u.lastName, ql.createdDate, cc.constructionName, ql.isConstructed, ql.listId) " +
+            "(qh.headerId, u.firstName, u.lastName, ql.createdDate, cc.constructionName, ql.isConstructed, ql.listId, CASE WHEN fp.projectId IS NOT NULL THEN true ELSE false END) " +
             "FROM QuotationHeader qh " +
             "INNER JOIN User u ON qh.customer.userId = u.userId " +
             "INNER JOIN CategoryContruction cc ON qh.categoryContruction.construction_id = cc.construction_id " +
             "INNER JOIN QuotationList ql ON qh.headerId = ql.quotationHeader.headerId " +
             "INNER JOIN Status s ON ql.status.statusId = s.statusId " +
+            "LEFT JOIN FinishedProject fp ON ql.listId = fp.quotationList.listId " +  // Left join to check for FinishedProject existence
             "WHERE s.statusId = 4 " +
             "AND (:keyword is null OR CONCAT(u.firstName, ' ', u.lastName) LIKE %:keyword%) " +
             "AND ql.isConstructed = :isConstructed")
     Page<QuotationDoneRequest> findAllByStatusIdIs4(@Param("keyword") String keyword, @Param("isConstructed") boolean isConstructed, Pageable pageable);
     @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest" +
-            "(qh.headerId, u.firstName, u.lastName, ql.createdDate, cc.constructionName, ql.isConstructed, ql.listId) " +
+            "(qh.headerId, u.firstName, u.lastName, ql.createdDate, cc.constructionName, ql.isConstructed, ql.listId, CASE WHEN fp.projectId IS NOT NULL THEN true ELSE false END) " +
             "FROM QuotationHeader qh " +
             "INNER JOIN User u ON qh.customer.userId = u.userId " +
             "INNER JOIN CategoryContruction cc ON qh.categoryContruction.construction_id = cc.construction_id " +
             "INNER JOIN QuotationList ql ON qh.headerId = ql.quotationHeader.headerId " +
             "INNER JOIN Status s ON ql.status.statusId = s.statusId " +
-            "WHERE s.statusId = 4 " +
-            "AND (:keyword is null OR CONCAT(u.firstName, ' ', u.lastName) LIKE %:keyword%) ")
+            "LEFT JOIN FinishedProject fp ON ql.listId = fp.quotationList.listId " +  // Left join to check for FinishedProject existence
+            "WHERE s.statusId = 4  AND (:keyword is null OR CONCAT(u.firstName, ' ', u.lastName) LIKE %:keyword%) ")
     Page<QuotationDoneRequest> findAllByStatusIdIs4WithoutConstructed(@Param("keyword") String keyword, Pageable pageable);
 }

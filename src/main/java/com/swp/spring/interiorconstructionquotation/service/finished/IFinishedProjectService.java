@@ -6,4 +6,5 @@ public interface IFinishedProjectService {
     public ResponseEntity<?> updateIsConstruction(int headerId);
     public ResponseEntity<?> createFinishedProject(FinishedProjectRequest finishedProjectRequest);
     public ResponseEntity<?> updateFinishedProject(FinishedProjectRequest finishedProjectRequest);
+    public boolean hasFinishedProject(int listId);
 }

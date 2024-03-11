@@ -111,4 +111,8 @@ public class FinishedProjectService implements IFinishedProjectService {
             return ResponseEntity.badRequest().body("Update failed due to an error: " + e.getMessage());
         }
     }
+
+    public boolean hasFinishedProject(int listId) {
+        return iQuotationListRepository.existsFinishedProjectByListId(listId);
+    }
 }

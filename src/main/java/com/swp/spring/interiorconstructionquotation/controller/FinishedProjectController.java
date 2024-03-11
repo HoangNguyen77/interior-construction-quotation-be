@@ -64,4 +64,14 @@ public class FinishedProjectController {
             return ResponseEntity.badRequest().body("Fail");
         }
     }
+    @GetMapping("/has-finished-project/{listId}")
+    public ResponseEntity<Boolean> hasFinishedProject(@PathVariable int listId) {
+        try {
+            boolean hasFinishedProject = iFinishedService.hasFinishedProject(listId);
+            return ResponseEntity.ok(hasFinishedProject);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body(false);
+        }
+    }
 }
