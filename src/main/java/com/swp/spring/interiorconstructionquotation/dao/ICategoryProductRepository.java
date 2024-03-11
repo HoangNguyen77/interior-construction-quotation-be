@@ -17,10 +17,10 @@ import java.util.Objects;
 public interface ICategoryProductRepository extends JpaRepository<CategoryProduct, Integer> {
     List<CategoryProduct> findByTypeRoom_RoomId(@RequestParam int roomId);
     public CategoryProduct findByCategoryId(int categoryId);
-    @Query("SELECT c.categoryId as categoryId, c.categoryName as categoryName, r.roomId as roomId FROM CategoryProduct c join c.typeRoom r WHERE c.categoryId = ?1")
+    @Query("SELECT c.categoryId as categoryId, c.categoryName as categoryName, r.roomId as roomId, r.roomName as roomName FROM CategoryProduct c join c.typeRoom r WHERE c.categoryId = ?1")
     Map<String, Objects> findCategoryWithRoomById(int categoryId);
 
-    @Query("SELECT c.categoryId as categoryId, c.categoryName as categoryName, r.roomId as roomId, r.roomName as roomName FROM CategoryProduct c join c.typeRoom r")
-    List<CategoryRequest> findAllCategoriesWithRoom();
+    @Query("SELECT new com.swp.spring.interiorconstructionquotation.service.product.category.CategoryRequest(cp.categoryId, cp.categoryName, tr.roomId, tr.roomName) FROM CategoryProduct cp JOIN cp.typeRoom tr")
+    List<CategoryRequest> findAllCategoryWithRoomName();
 
 }
