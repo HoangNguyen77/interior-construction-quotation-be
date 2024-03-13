@@ -150,7 +150,7 @@ public class QuotationService implements IQuotationService {
                         quotationDetails.add(detail);
                     }
                 }
-            }
+            }//
             quotationDetailRepository.saveAll(quotationDetails);
 
             return true;
