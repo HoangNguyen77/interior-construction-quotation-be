@@ -34,10 +34,7 @@ public class Product {
     @Column(name = "unit_price")
     private double unitPrice;
 
-//    @Column(name = "unit")
-//    private String unit;
-
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "type_id")
     private TypeProduct typeProduct;
 
@@ -62,14 +59,4 @@ public class Product {
     )
     @JoinColumn(name = "unit_id", nullable = false)
     private Unit unit;
-//    @ManyToMany(fetch = FetchType.LAZY, cascade = {
-//            CascadeType.PERSIST, CascadeType.MERGE,
-//            CascadeType.DETACH, CascadeType.REFRESH
-//    })
-//    @JoinTable(
-//            name = "product_design",
-//            joinColumns = @JoinColumn(name = "product_id"),
-//            inverseJoinColumns = @JoinColumn(name = "design_id")
-//    )
-//    private List<DesignConstruction> designConstructionList;
 }

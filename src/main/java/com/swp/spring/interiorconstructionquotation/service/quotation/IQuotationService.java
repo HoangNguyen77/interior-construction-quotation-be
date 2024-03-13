@@ -5,4 +5,5 @@ public interface IQuotationService {
     boolean approveQuotation(int headerId);
     boolean updateQuotationDetail(int detailId, String note, double real_total_price);
     boolean updateQuotationListTotalPrice(int quotationListId);
+    boolean finalizeQuotation(int listId, int headerId);
 }
