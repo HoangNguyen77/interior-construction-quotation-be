@@ -24,6 +24,6 @@ public class TypeProduct {
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryProduct categoryProduct;
 
-    @OneToOne(mappedBy = "typeProduct",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "typeProduct",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Product product;
 }

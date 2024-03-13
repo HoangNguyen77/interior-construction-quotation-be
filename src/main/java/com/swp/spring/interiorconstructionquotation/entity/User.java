@@ -60,12 +60,7 @@ public class User{
     private List<Blog> blogList;
 
     @OneToMany(
-            mappedBy = "staff",
-            fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<QuotationHeader> staffQuotationHeaders;
-
-    @OneToMany(
             mappedBy = "customer",
-            fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+            fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<QuotationHeader> customerQuotationHeaders;
 }
