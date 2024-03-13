@@ -27,4 +27,5 @@ public interface IQuotationDetailRepository extends JpaRepository<QuotationDetai
 
     @Query(value = "select * from quotation_detail where list_id = ?1", nativeQuery = true)
     List<QuotationDetail> findAllByQuotationListId(int listId);
+    QuotationDetail findByDetailId(int id);
 }

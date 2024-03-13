@@ -1,5 +1,6 @@
 package com.swp.spring.interiorconstructionquotation.dao;
 
+import com.swp.spring.interiorconstructionquotation.entity.CategoryContruction;
 import com.swp.spring.interiorconstructionquotation.entity.CategoryProduct;
 import com.swp.spring.interiorconstructionquotation.entity.CategoryWithRoomName;
 import com.swp.spring.interiorconstructionquotation.service.product.category.CategoryRequest;

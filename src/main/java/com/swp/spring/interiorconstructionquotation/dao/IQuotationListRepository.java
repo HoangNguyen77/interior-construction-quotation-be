@@ -39,6 +39,7 @@ public interface IQuotationListRepository extends JpaRepository<QuotationList, I
             "WHERE ql.quotationHeader.headerId = :headerId " +
             "AND ql.status.statusId = 4")
     QuotationList findByHeaderIdAndStatusIdIs4(@Param("headerId") int headerId);
+    public List<QuotationList> findByQuotationHeader_HeaderId(@Param("headerId") int headerId);
 
     @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest" +
             "(qh.headerId, u.firstName, u.lastName, ql.createdDate, cc.constructionName, ql.isConstructed, ql.listId, CASE WHEN fp.projectId IS NOT NULL THEN true ELSE false END) " +
@@ -62,4 +63,15 @@ public interface IQuotationListRepository extends JpaRepository<QuotationList, I
             "LEFT JOIN FinishedProject fp ON ql.listId = fp.quotationList.listId " +  // Left join to check for FinishedProject existence
             "WHERE s.statusId = 4  AND (:keyword is null OR CONCAT(u.firstName, ' ', u.lastName) LIKE %:keyword%) ")
     Page<QuotationDoneRequest> findAllByStatusIdIs4WithoutConstructed(@Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest" +
+            "(qh.headerId, u.firstName, u.lastName, ql.createdDate, cc.constructionName, ql.isConstructed, ql.listId, CASE WHEN fp.projectId IS NOT NULL THEN true ELSE false END) " +
+            "FROM QuotationHeader qh " +
+            "INNER JOIN User u ON qh.customer.userId = u.userId " +
+            "INNER JOIN CategoryContruction cc ON qh.categoryContruction.construction_id = cc.construction_id " +
+            "INNER JOIN QuotationList ql ON qh.headerId = ql.quotationHeader.headerId " +
+            "INNER JOIN Status s ON ql.status.statusId = s.statusId " +
+            "LEFT JOIN FinishedProject fp ON ql.listId = fp.quotationList.listId " +  // Left join to check for FinishedProject existence
+            "WHERE s.statusId = 1")
+    Page<QuotationDoneRequest> findAllByStatusIdIs1(Pageable pageable);
+
 }

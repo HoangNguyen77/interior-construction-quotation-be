@@ -37,11 +37,10 @@ public class ProductService implements IProductService{
 
 
 
-    @Override
-    public Page<Product> getAllProducts(int page, int pagesize) {
+
+    public Product getAllProductsParam(int id) {
         try {
-            Pageable pageable = PageRequest.of(page, pagesize);
-            return productRepository.findAll(pageable);
+            return productRepository.getReferenceById(id);
         } catch (Exception e) {
             // Log or handle unexpected exceptions
             throw new RuntimeException("Failed to retrieve products", e);
@@ -67,6 +66,11 @@ public class ProductService implements IProductService{
 //            throw new RuntimeException("Failed to retrieve product with id: " + id, e);
 //        }
 //    }
+
+    @Override
+    public Page<Product> getAllProducts(int page, int pagesize) {
+        return null;
+    }
 
     @Override
     @Transactional
