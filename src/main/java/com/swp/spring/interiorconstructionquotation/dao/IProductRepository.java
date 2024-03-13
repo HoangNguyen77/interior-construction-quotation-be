@@ -20,8 +20,10 @@ public interface IProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("SELECT new com.swp.spring.interiorconstructionquotation.service.product.ProductRequest(" +
             "p.productId, p.name, p.width, p.length, p.height, p.unitPrice, " +
-            "p.unit.unitId, p.typeProduct.typeId, p.typeProduct.typeName, " +
-            "p.typeProduct.categoryProduct.categoryId, p.typeProduct.categoryProduct.typeRoom.roomId) " +
+            "p.unit.unitId, p.unit.unitName, p.typeProduct.typeId, " +
+            "p.typeProduct.typeName, p.typeProduct.categoryProduct.categoryId, " +
+            "p.typeProduct.categoryProduct.typeRoom.roomId," +
+            "p.typeProduct.categoryProduct.typeRoom.roomName) " +
             "FROM Product p " +
             "WHERE p.productId = :productId")
     ProductRequest findProductRequestById(int productId);

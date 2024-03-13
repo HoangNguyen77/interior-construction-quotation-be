@@ -21,13 +21,15 @@ public class ProductRequest {
     private double height;
     private double unitPrice;
     private int unitId;
+    private String unitName;
     private int typeId;
     private String typeName;
     private int categoryId;
     private int roomId;
+    private String roomName;
     private List<String> productImageList;
 
-    public ProductRequest(int productId, String name, double width, double length, double height, double unitPrice, int unitId, String typeName, int categoryId, List<String> productImageList) {
+    public ProductRequest(int productId, String name, double width, double length, double height, double unitPrice, int unitId, String unitName, int typeId, String typeName, int categoryId, int roomId, String roomName) {
         this.productId = productId;
         this.name = name;
         this.width = width;
@@ -35,60 +37,11 @@ public class ProductRequest {
         this.height = height;
         this.unitPrice = unitPrice;
         this.unitId = unitId;
-        this.typeName = typeName;
-        this.categoryId = categoryId;
-        this.productImageList = productImageList;
-    }
-    public ProductRequest(int productId, String name, double width, double length, double height, double unitPrice, int unitId, int typeId, String typeName, int categoryId, int roomId) {
-        this.productId = productId;
-        this.name = name;
-        this.width = width;
-        this.length = length;
-        this.height = height;
-        this.unitPrice = unitPrice;
-        this.unitId = unitId;
+        this.unitName = unitName;
         this.typeId = typeId;
         this.typeName = typeName;
         this.categoryId = categoryId;
         this.roomId = roomId;
+        this.roomName = roomName;
     }
-//    public ProductRequest(int productId, String name, double width, double length, double height, double unitPrice, int unitId, String typeName, int categoryId, int roomId) {
-//        this.productId = productId;
-//        this.name = name;
-//        this.width = width;
-//        this.length = length;
-//        this.height = height;
-//        this.unitPrice = unitPrice;
-//        this.unitId = unitId;
-//        this.typeName = typeName;
-//        this.categoryId = categoryId;
-//        this.roomId = roomId;
-//    }
-
-
-
-//    public ProductRequest(int productId, String name, double width, double length, double height, double unitPrice, int unitId, String typeName, int categoryId, List<String> productImageList) {
-//        this.productId = productId;
-//        this.name = name;
-//        this.width = width;
-//        this.length = length;
-//        this.height = height;
-//        this.unitPrice = unitPrice;
-//        this.unitId = unitId;
-//        this.typeName = typeName;
-//        this.categoryId = categoryId;
-//        this.productImageList = productImageList;
-//    }
-//
-//    public ProductRequest(int productId, String name, double width, double length, double height, double unitPrice, int unitId, String typeName, int categoryId) {
-//        this.productId = productId;
-//        this.name = name;
-//        this.width = width;
-//        this.length = length;
-//        this.height = height;
-//        this.unitPrice = unitPrice;
-//        this.unitId = unitId;
-//        this.typeName = typeName;
-//        this.categoryId = categoryId;
-//    }
 }
