@@ -8,11 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 @RepositoryRestResource(path = "detail-product")
+@Repository
 public interface IProductRepository extends JpaRepository<Product, Integer> {
     Page<Product> findByTypeProduct_TypeId(@RequestParam int typeId, Pageable pageable);
     Page<Product> findByTypeProduct_CategoryProduct_TypeRoom_RoomId(@RequestParam int roomId, Pageable pageable);
