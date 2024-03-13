@@ -15,6 +15,13 @@ public class QuotationHeader {
     @Column(name = "header_id")
     private int headerId;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH
+    })
+    @JoinColumn(name = "staff_id")
+    private User staff;
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH

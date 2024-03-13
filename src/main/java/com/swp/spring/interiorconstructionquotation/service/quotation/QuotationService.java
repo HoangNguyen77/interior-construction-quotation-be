@@ -6,10 +6,11 @@ import com.swp.spring.interiorconstructionquotation.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
-public class QuotationService implements IQuotationService{
+public class QuotationService implements IQuotationService {
     @Autowired
     private IQuotationHeaderRepository quotationHeaderRepository;
     @Autowired
@@ -21,61 +22,139 @@ public class QuotationService implements IQuotationService{
     @Autowired
     private ICategoryProductRepository categoryProductRepository;
     @Autowired
+    private ICategoryConstructionRepository iCategoryConstructionRepository;
+    @Autowired
     private ITypeRoomRepository typeRoomRepository;
     @Autowired
     private ITypeProductRepository typeProductRepository;
+    @Autowired
+    private IUserRepository iUserRepository;
+    @Autowired
+    private IStatusRepository statusRepository;
+
     @Override
     public boolean createQuotation(QuotationRequest quotationRequest) {
-        try{
-            int customerID = quotationRequest.getCustomerID();
-            int constructionID = quotationRequest.getConstructionID();
+        return false;
+    }
 
-            int headerID = (int) (quotationHeaderRepository.count() + 1);
-            quotationHeaderRepository.createQuotationHeader(headerID, customerID, constructionID);
 
-            int listID = (int) (quotationListRepository.count() + 1);
-            quotationListRepository.createQuotationList(listID, 0, false, headerID, 1);
-
-            double totalPrice = 0;
-
-            List<QuotationDetailRequest> quotationDetail = quotationRequest.getQuotationDetail();
-            for(QuotationDetailRequest detailRequest : quotationDetail) {
-
-                int productID = detailRequest.getProductID();
-                double estimateTotalPrice = detailRequest.getEstimateTotalPrice();
-                Product p = productRepository.findByProductId(productID);
-                TypeProduct typeProduct = typeProductRepository.findTypeProductByProduct_ProductId(productID);
-                String typeProductName = typeProduct.getTypeName();
-                double width = p.getWidth();
-                double length = p.getLength();
-                double height = p.getHeight();
-                int quantity = detailRequest.getQuantity();
-                double estimate_total_price = estimateTotalPrice;
-                int categoryID = detailRequest.getCategoryID();
-                int typeRoomID = detailRequest.getTypeRoomID();
-
-                int detailID = (int) (quotationDetailRepository.count() + 1);
-                quotationDetailRepository.createQuotationDetail(
-                        detailID,
-                        typeRoomRepository.findByRoomId(typeRoomID).getRoomName(),
-                        categoryProductRepository.findByCategoryId(categoryID).getCategoryName(),
-                        typeProductRepository.findByTypeId(p.getTypeProduct().getTypeId()).getTypeName(),
-                        width, length, height,
-                        quantity,
-                        estimate_total_price,
-                        listID,
-                        productID
-                );
-                totalPrice += estimateTotalPrice;
+    public boolean addQuotation(List<QuotationRequestDTO> quotationRequests) {
+        try {
+            // Step 1: Insert records into the quotation_header table
+            CategoryContruction categoryContruction = iCategoryConstructionRepository.findById(1);
+            if (categoryContruction == null) {
+                // Handle the case when the category construction is not found
+                return false;
             }
 
-            QuotationList quotationList = quotationListRepository.findByListId(listID);
-            quotationList.setEstimateTotalPrice(totalPrice);
-            quotationList.setRealTotalPrice(0);
-            quotationListRepository.save(quotationList);
+            // Create a map to store QuotationHeader objects by customer ID
+            Map<Integer, QuotationHeader> headerMap = new HashMap<>();
+            for (QuotationRequestDTO request : quotationRequests) {
+                User user = iUserRepository.findByUserId(request.getCustomerID());
+                User staff = iUserRepository.findByUserId(1);
+                if (user != null) {
+                    QuotationHeader header = headerMap.get(user.getUserId());
+                    if (header == null) {
+                        header = new QuotationHeader();
+                        header.setStaff(staff);
+                        header.setCustomer(user);
+                        header.setCategoryContruction(categoryContruction);
+                        headerMap.put(user.getUserId(), header);
+                    }
+                }
+            }
+
+            // Save all quotation headers
+            List<QuotationHeader> quotationHeaders = new ArrayList<>(headerMap.values());
+            quotationHeaderRepository.saveAll(quotationHeaders);
+
+            // Step 2: Insert records into the quotation_list table
+            List<QuotationList> quotationLists = new ArrayList<>();
+            Status status = statusRepository.findByStatusId(1);
+            for (QuotationHeader header : quotationHeaders) {
+                QuotationList list = new QuotationList();
+                list.setCreatedDate(LocalDate.now());
+                list.setQuotationHeader(header);
+                list.setStatus(status);
+
+                // Calculate the total estimate total price for this list
+                double totalEstimateTotalPrice = 0.0;
+                for (QuotationRequestDTO request : quotationRequests) {
+                    if (request.getCustomerID() == header.getCustomer().getUserId()) {
+                        Product product = productRepository.findByProductId(request.getProductID());
+                        double unitPrice = product.getUnitPrice();
+                        double quantity = request.getQuantity();
+                        String unitName = product.getUnit().getUnitName();
+                        double estimateTotalPrice = 0.0;
+                        switch (unitName) {
+                            case "cái":
+                                estimateTotalPrice = quantity * unitPrice;
+                                break;
+                            case "md":
+                                double width = product.getWidth();
+                                estimateTotalPrice = product.getLength() * width * unitPrice * quantity;
+                                break;
+                            case "m2":
+                                width = product.getWidth();
+                                double area = product.getLength() * width;
+                                estimateTotalPrice = area * unitPrice * quantity;
+                                break;
+                            default:
+                                break;
+                        }
+                        totalEstimateTotalPrice += estimateTotalPrice;
+                    }
+                }
+                list.setEstimateTotalPrice(totalEstimateTotalPrice);
+                quotationLists.add(list);
+            }
+            quotationListRepository.saveAll(quotationLists);
+
+            // Step 3: Insert records into the quotation_detail table
+            List<QuotationDetail> quotationDetails = new ArrayList<>();
+            for (QuotationList list : quotationLists) {
+                for (QuotationRequestDTO request : quotationRequests) {
+                    if (request.getCustomerID() == list.getQuotationHeader().getCustomer().getUserId()) {
+                        Product product = productRepository.findByProductId(request.getProductID());
+                        double unitPrice = product.getUnitPrice();
+                        double quantity = request.getQuantity();
+                        String unitName = product.getUnit().getUnitName();
+                        double estimateTotalPrice = 0.0;
+                        switch (unitName) {
+                            case "cái":
+                                estimateTotalPrice = quantity * unitPrice;
+                                break;
+                            case "md":
+                                double width = product.getWidth();
+                                estimateTotalPrice = product.getLength() * width * unitPrice * quantity;
+                                break;
+                            case "m2":
+                                width = product.getWidth();
+                                double area = product.getLength() * width;
+                                estimateTotalPrice = area * unitPrice * quantity;
+                                break;
+                            default:
+                                break;
+                        }
+                        QuotationDetail detail = new QuotationDetail();
+                        detail.setTypeRoom(product.getTypeProduct().getTypeName());
+                        detail.setCategoryProduct(product.getTypeProduct().getCategoryProduct().getCategoryName());
+                        detail.setTypeProduct(product.getTypeProduct().getTypeName());
+                        detail.setHeight(product.getHeight());
+                        detail.setLength(product.getLength());
+                        detail.setWidth(product.getWidth());
+                        detail.setEstimateTotalPrice(estimateTotalPrice);
+                        detail.setQuantity(request.getQuantity());
+                        detail.setQuotationList(list);
+                        detail.setProduct(product);
+                        quotationDetails.add(detail);
+                    }
+                }
+            }
+            quotationDetailRepository.saveAll(quotationDetails);
 
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -87,18 +166,98 @@ public class QuotationService implements IQuotationService{
 //            QuotationList quotationList = quotationListRepository.findByListId(listID);
             quotationListRepository.updateStatus(listID, 2);
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
     }
 
     @Override
-    public boolean updateQuotationDetail(int detailId, String note, double real_total_price) {
+    public boolean deleteQuatationHeader(int headerId) {
+        try {
+            quotationHeaderRepository.deleteById(headerId);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteQuatationList(int headerId) {
+        try {
+            quotationListRepository.deleteById(headerId);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateQuotationDetail(int detailId, String note, double real_total_price, double realPrice) {
+        QuotationDetail details = quotationDetailRepository.findByDetailId(detailId);
+        QuotationList quotationList = quotationListRepository.findByListId(details.getQuotationList().getListId());
+        quotationList.setRealTotalPrice(realPrice);
+        Status status = statusRepository.findByStatusId(3);
+        quotationList.setStatus(status);
         try {
             quotationDetailRepository.updateDetail(detailId, note, real_total_price);
+            quotationListRepository.save(quotationList);
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+    @Override
+    public boolean addQuotationDetailCustomer(List<QuotationDetails> details, double realPrice, int headerId) {
+        try {
+            Status status = statusRepository.findByStatusId(3);
+            QuotationHeader quotationHeader = quotationHeaderRepository.findByHeaderId(headerId);
+            QuotationDetail firstDetail = quotationDetailRepository.findByDetailId(details.get(0).getDetailId());
+            QuotationList quotationList = firstDetail.getQuotationList();
+
+            // Create a new QuotationList
+            QuotationList newQuotationList = new QuotationList();
+            newQuotationList.setCreatedDate(LocalDate.now());
+            newQuotationList.setConstructed(true);
+            newQuotationList.setQuotationHeader(quotationHeader);
+            newQuotationList.setEstimateTotalPrice(quotationList.getEstimateTotalPrice());
+            newQuotationList.setRealTotalPrice(realPrice);
+            newQuotationList.setStatus(status);
+
+            // Save the new QuotationList
+            quotationListRepository.save(newQuotationList);
+
+            // Create a list to hold the new QuotationDetails
+            List<QuotationDetail> newQuotationDetails = new ArrayList<>();
+
+            // Create and associate new QuotationDetails with the new QuotationList
+            for (QuotationDetails detail : details) {
+                QuotationDetail newQuotationDetail = new QuotationDetail();
+                QuotationDetail old = quotationDetailRepository.findByDetailId(detail.getDetailId());
+                newQuotationDetail.setNote(detail.getNote());
+                newQuotationDetail.setQuotationList(newQuotationList);
+                newQuotationDetail.setProduct(old.getProduct());
+                newQuotationDetail.setTypeRoom(old.getTypeRoom());
+                newQuotationDetail.setCategoryProduct(old.getCategoryProduct());
+                newQuotationDetail.setTypeProduct(old.getTypeProduct());
+                newQuotationDetail.setHeight(old.getHeight());
+                newQuotationDetail.setLength(old.getLength());
+                newQuotationDetail.setWidth(old.getWidth());
+                newQuotationDetail.setEstimateTotalPrice(old.getEstimateTotalPrice());
+                newQuotationDetail.setQuantity(old.getQuantity());
+                newQuotationDetails.add(newQuotationDetail);
+                newQuotationDetail.setRealTotalPrice(old.getRealTotalPrice());
+//                newQuotationDetail.setQuotationList();
+            }
+
+            // Save all the new QuotationDetails
+            quotationDetailRepository.saveAll(newQuotationDetails);
+
+            return true;
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -109,24 +268,12 @@ public class QuotationService implements IQuotationService{
         try {
             List<QuotationDetail> detailList = quotationDetailRepository.findAllByQuotationListId(quotationListId);
             double totalPrice = 0;
-            for(QuotationDetail detail : detailList){
+            for (QuotationDetail detail : detailList) {
                 totalPrice += detail.getRealTotalPrice();
             }
             quotationListRepository.updateQuotationListTotalPrice(quotationListId, totalPrice);
             return true;
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-            return false;
-        }
-    }
-
-    @Override
-    public boolean finalizeQuotation(int listId, int headerId) {
-        try {
-            quotationListRepository.deleteAllExceptListId(listId, headerId);
-            quotationListRepository.updateStatus(listId,4);
-            return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }

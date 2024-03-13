@@ -16,7 +16,7 @@ import java.util.List;
 @RepositoryRestResource(path = "quotation-list")
 public interface IQuotationListRepository extends JpaRepository<QuotationList, Integer> {
     public QuotationList findByListId(int quotationListId);
-    public List<QuotationList> findByQuotationHeader_HeaderId(@Param("headerId") int headerId);
+//    public List<QuotationList> findByQuotationHeader_HeaderId(@Param("headerId") int headerId);
 
     @Query("SELECT COUNT(fp) > 0 FROM FinishedProject fp WHERE fp.quotationList.listId = :listId")
     boolean existsFinishedProjectByListId(@Param("listId") int listId);
@@ -36,6 +36,7 @@ public interface IQuotationListRepository extends JpaRepository<QuotationList, I
     @Query(value = "insert into quotation_list(list_id, created_date, estimate_total_price, real_total_price, is_constructed, header_id, status_id) " +
             "values (?1, current_timestamp, ?2, 0, ?3, ?4, ?5)", nativeQuery = true)
     void createQuotationList(int listID, double estimateTotalPrice, boolean isConstructed, int headerID, int statusID);
+
 
     @Transactional
     @Modifying
