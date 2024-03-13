@@ -137,7 +137,7 @@ public class QuotationService implements IQuotationService {
                                 break;
                         }
                         QuotationDetail detail = new QuotationDetail();
-                        detail.setTypeRoom(product.getTypeProduct().getTypeName());
+                        detail.setTypeRoom(product.getTypeProduct().getCategoryProduct().getTypeRoom().getRoomName());
                         detail.setCategoryProduct(product.getTypeProduct().getCategoryProduct().getCategoryName());
                         detail.setTypeProduct(product.getTypeProduct().getTypeName());
                         detail.setHeight(product.getHeight());
