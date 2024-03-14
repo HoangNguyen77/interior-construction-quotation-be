@@ -280,5 +280,15 @@ public class QuotationService implements IQuotationService {
         }
     }
 
-
+    @Override
+    public boolean finalizeQuotation(int listId, int headerId) {
+        try {
+            quotationListRepository.deleteAllExceptListId(listId, headerId);
+            quotationListRepository.updateStatus(listId,4);
+            return true;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
 }

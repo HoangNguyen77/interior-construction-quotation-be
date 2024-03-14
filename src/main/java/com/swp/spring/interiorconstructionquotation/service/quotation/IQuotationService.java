@@ -13,4 +13,5 @@ public interface IQuotationService {
     boolean updateQuotationDetail(int detailId, String note, double real_total_price, double realPrice);
     public boolean addQuotationDetailCustomer(List<QuotationDetails> details, double realPrice, int headerId);
     boolean updateQuotationListTotalPrice(int quotationListId);
+    boolean finalizeQuotation(int listId, int headerId);
 }

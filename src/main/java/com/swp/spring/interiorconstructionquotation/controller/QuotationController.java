@@ -136,4 +136,17 @@ public class QuotationController {
             return ResponseEntity.badRequest().body("Fail");
         }
     }
+    @PutMapping("/finalize-quotation")
+    public ResponseEntity<?> finalizeQuotation(@RequestParam("quotation-list-id") int quotation_list_id, @RequestParam("quotation-header-id") int quotation_header_id) {
+        try {
+            boolean result = quotationService.finalizeQuotation(quotation_list_id, quotation_header_id);
+            if (result) {
+                return ResponseEntity.ok().body("Finalize quotation successfully");
+            }
+            return ResponseEntity.ok().body("Finalize quotation fail");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
+    }
 }

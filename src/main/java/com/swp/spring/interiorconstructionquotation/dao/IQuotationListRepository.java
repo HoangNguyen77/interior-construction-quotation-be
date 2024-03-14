@@ -28,7 +28,10 @@ public interface IQuotationListRepository extends JpaRepository<QuotationList, I
     @Modifying
     @Query(value = "update quotation_list set status_id = 3, real_total_price = ?2 where list_id = ?1", nativeQuery = true)
     void updateQuotationListTotalPrice(int listID, double total);
-
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM QuotationList ql WHERE ql.listId <> ?1 AND ql.quotationHeader.headerId = ?2")
+    void deleteAllExceptListId(int listId, int headerId);
     @Transactional
     @Modifying
     @Query(value = "insert into quotation_list(list_id, created_date, estimate_total_price, real_total_price, is_constructed, header_id, status_id) " +
