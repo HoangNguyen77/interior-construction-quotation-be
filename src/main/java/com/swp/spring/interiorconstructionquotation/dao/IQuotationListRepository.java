@@ -43,7 +43,7 @@ public interface IQuotationListRepository extends JpaRepository<QuotationList, I
             "AND ql.status.statusId = 4")
     QuotationList findByHeaderIdAndStatusIdIs4(@Param("headerId") int headerId);
     public List<QuotationList> findByQuotationHeader_HeaderId(@Param("headerId") int headerId);
-
+    public List<QuotationList> findByListIdNotAndQuotationHeader_HeaderId(int listId, int headerId);
     @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest" +
             "(qh.headerId, u.firstName, u.lastName, ql.createdDate, cc.constructionName, ql.isConstructed, ql.listId, CASE WHEN fp.projectId IS NOT NULL THEN true ELSE false END) " +
             "FROM QuotationHeader qh " +

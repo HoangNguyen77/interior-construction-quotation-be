@@ -76,7 +76,7 @@ public class QuotationService implements IQuotationService {
                 list.setCreatedDate(LocalDate.now());
                 list.setQuotationHeader(header);
                 list.setStatus(status);
-
+                list.setConstructed(false);
                 // Calculate the total estimate total price for this list
                 double totalEstimateTotalPrice = 0.0;
                 for (QuotationRequestDTO request : quotationRequests) {
@@ -214,7 +214,7 @@ public class QuotationService implements IQuotationService {
     @Override
     public boolean addQuotationDetailCustomer(List<QuotationDetails> details, double realPrice, int headerId) {
         try {
-            Status status = statusRepository.findByStatusId(3);
+            Status status = statusRepository.findByStatusId(2);
             QuotationHeader quotationHeader = quotationHeaderRepository.findByHeaderId(headerId);
             QuotationDetail firstDetail = quotationDetailRepository.findByDetailId(details.get(0).getDetailId());
             QuotationList quotationList = firstDetail.getQuotationList();
@@ -222,7 +222,7 @@ public class QuotationService implements IQuotationService {
             // Create a new QuotationList
             QuotationList newQuotationList = new QuotationList();
             newQuotationList.setCreatedDate(LocalDate.now());
-            newQuotationList.setConstructed(true);
+            newQuotationList.setConstructed(false);
             newQuotationList.setQuotationHeader(quotationHeader);
             newQuotationList.setEstimateTotalPrice(quotationList.getEstimateTotalPrice());
             newQuotationList.setRealTotalPrice(realPrice);
@@ -283,7 +283,8 @@ public class QuotationService implements IQuotationService {
     @Override
     public boolean finalizeQuotation(int listId, int headerId) {
         try {
-            quotationListRepository.deleteAllExceptListId(listId, headerId);
+            List<QuotationList> quotationLists = quotationListRepository.findByListIdNotAndQuotationHeader_HeaderId(listId, headerId);
+            quotationListRepository.deleteAll(quotationLists);
             quotationListRepository.updateStatus(listId,4);
             return true;
         }catch (Exception e){
