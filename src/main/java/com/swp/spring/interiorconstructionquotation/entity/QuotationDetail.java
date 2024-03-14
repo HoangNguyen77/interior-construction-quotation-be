@@ -14,6 +14,9 @@ public class QuotationDetail {
     @Column(name = "detail_id")
     private int detailId;
 
+    @Column(name = "product_name")
+    private String productName;
+
     @Column(name = "type_room")
     private String typeRoom;
 
