@@ -284,8 +284,12 @@ public class QuotationService implements IQuotationService {
     public boolean finalizeQuotation(int listId, int headerId) {
         try {
             List<QuotationList> quotationLists = quotationListRepository.findByListIdNotAndQuotationHeader_HeaderId(listId, headerId);
-            quotationListRepository.deleteAll(quotationLists);
+            Status status = statusRepository.findByStatusId(5);
+            for (QuotationList list : quotationLists){
+                list.setStatus(status);
+            }
             quotationListRepository.updateStatus(listId,4);
+            //gui mail
             return true;
         }catch (Exception e){
             System.out.println(e.getMessage());

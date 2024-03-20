@@ -42,6 +42,15 @@ public interface IQuotationListRepository extends JpaRepository<QuotationList, I
             "WHERE ql.quotationHeader.headerId = :headerId " +
             "AND ql.status.statusId = 4")
     QuotationList findByHeaderIdAndStatusIdIs4(@Param("headerId") int headerId);
+
+    @Query("SELECT ql FROM QuotationList ql " +
+            "JOIN ql.quotationHeader qh " +
+            "JOIN ql.status s " +
+            "WHERE s.statusId = 4 " +
+            "AND qh.customer.userId = :customerId " +
+            "ORDER BY ql.listId DESC")
+    List<QuotationList> findListWithStatusIdIs4ByCustomerId(@Param("customerId") int customerId);
+
     public List<QuotationList> findByQuotationHeader_HeaderId(@Param("headerId") int headerId);
     public List<QuotationList> findByListIdNotAndQuotationHeader_HeaderId(int listId, int headerId);
     @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest" +
