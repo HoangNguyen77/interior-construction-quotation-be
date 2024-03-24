@@ -42,12 +42,15 @@ public class QuotationController {
                 return ResponseEntity.ok().body("Create quotation successfully");
             }
             System.out.println("HAHAHAHA" + quotationRequests);
-            return ResponseEntity.ok().body("Create quotation fail");
+            return ResponseEntity.badRequest().body("Create quotation fail");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body("Fail");
         }
     }
+
+
+
     @DeleteMapping("/delete-quotation-header")
     public ResponseEntity<?> deleteQuatationHeader(@RequestParam("quotation-header-id") int quotation_header_id) {
         try {
