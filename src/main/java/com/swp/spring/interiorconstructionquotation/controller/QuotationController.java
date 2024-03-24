@@ -163,4 +163,28 @@ public class QuotationController {
             return ResponseEntity.badRequest().body("Fail");
         }
     }
+    @PutMapping("/cancel-confirm-quotation")
+    public ResponseEntity<?> cancelConfirmQuotation(@RequestParam("quotation-list-id") int quotation_list_id) {
+        try {
+            boolean result = quotationService.cancelConfirmQuotation(quotation_list_id);
+            if (result) {
+                return ResponseEntity.ok().body("Cancel quotation successfully");
+            }
+            return ResponseEntity.ok().body("Cancel quotation fail");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
+    }
+    @GetMapping("count-quotation-header")
+    public int countByQuotationListStatusId(@RequestParam("status-id") int statusId){
+        try {
+            int result = quotationService.countByQuotationListStatusId(statusId);
+            return result;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return -1;
+        }
+    }
 }

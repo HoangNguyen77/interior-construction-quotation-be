@@ -18,4 +18,6 @@ public interface IQuotationHeaderRepository extends JpaRepository<QuotationHeade
     @Transactional
     @Query(value = "DELETE FROM quotation_header WHERE header_id = ?1", nativeQuery = true)
     void deleteByHeaderId(int headerId);
+    @Query("SELECT COUNT(DISTINCT qh) FROM QuotationHeader qh JOIN qh.list ql WHERE ql.status.statusId = ?1")
+    int countByQuotationListStatusId( int statusId);
 }

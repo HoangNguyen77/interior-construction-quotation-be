@@ -305,6 +305,17 @@ public class QuotationService implements IQuotationService {
     }
 
     @Override
+    public boolean cancelConfirmQuotation(int listId) {
+        try {
+            quotationListRepository.updateStatus(listId,5);
+            return true;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
     public boolean finalizeQuotation(int listId, int headerId) {
         try {
             List<QuotationList> quotationLists = quotationListRepository.findByListIdNotAndQuotationHeader_HeaderId(listId, headerId);
@@ -319,6 +330,17 @@ public class QuotationService implements IQuotationService {
         }catch (Exception e){
             System.out.println(e.getMessage());
             return false;
+        }
+    }
+
+    @Override
+    public int countByQuotationListStatusId(int statusId) {
+        try {
+            //gui mail
+            return quotationHeaderRepository.countByQuotationListStatusId(statusId);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return 0;
         }
     }
 }
