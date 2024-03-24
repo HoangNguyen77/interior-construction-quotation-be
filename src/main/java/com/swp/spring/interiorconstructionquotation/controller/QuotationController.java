@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/quotation")
 public class QuotationController {
     @Autowired
-    private  IQuotationService quotationService;
+    private IQuotationService quotationService;
 
     @PostMapping("/create-quotation")
     public ResponseEntity<?> createQuoation(@RequestBody QuotationRequest quotationRequest) {
@@ -34,6 +34,7 @@ public class QuotationController {
             return ResponseEntity.badRequest().body("Fail");
         }
     }
+
     @PostMapping("/add-quotation")
     public ResponseEntity<?> addQuoation(@RequestBody List<QuotationRequestDTO> quotationRequests) {
         try {
@@ -50,7 +51,6 @@ public class QuotationController {
     }
 
 
-
     @DeleteMapping("/delete-quotation-header")
     public ResponseEntity<?> deleteQuatationHeader(@RequestParam("quotation-header-id") int quotation_header_id) {
         try {
@@ -62,7 +62,9 @@ public class QuotationController {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body("Fail");
-        }}
+        }
+    }
+
     @PostMapping("/delete-quotation-list")
     public ResponseEntity<?> deleteQuatationList(@RequestParam int id) {
         try {
@@ -74,7 +76,8 @@ public class QuotationController {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body("Fail");
-        }}
+        }
+    }
 
     @PutMapping("/approve-quotation")
     public ResponseEntity<?> updateQuotation(@RequestParam int id) {
@@ -106,12 +109,13 @@ public class QuotationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fail");
         }
     }
+
     @PostMapping("/add-quotation-detail-customer")
     public ResponseEntity<String> addQuotationDetailCustomer(@RequestBody List<QuotationDetails> request,
                                                              @RequestParam double totalPrice,
                                                              @RequestParam int headerId
     ) {
-        System.out.println(headerId+"");
+        System.out.println(headerId + "");
         try {
 //            for (QuotationDetails detail : request) {
             boolean result = quotationService.addQuotationDetailCustomer(request, totalPrice, headerId);
@@ -139,6 +143,7 @@ public class QuotationController {
             return ResponseEntity.badRequest().body("Fail");
         }
     }
+
     @PutMapping("/finalize-quotation")
     public ResponseEntity<?> finalizeQuotation(@RequestParam("quotation-list-id") int quotation_list_id, @RequestParam("quotation-header-id") int quotation_header_id) {
         try {
@@ -152,6 +157,7 @@ public class QuotationController {
             return ResponseEntity.badRequest().body("Fail");
         }
     }
+
     @GetMapping("/cancel-quotation")
     public ResponseEntity<?> cancelQuotation(@RequestParam("quotation-header-id") int quotation_header_id) {
         try {
@@ -166,6 +172,7 @@ public class QuotationController {
             return ResponseEntity.badRequest().body("Fail");
         }
     }
+
     @PutMapping("/cancel-confirm-quotation")
     public ResponseEntity<?> cancelConfirmQuotation(@RequestParam("quotation-list-id") int quotation_list_id) {
         try {
@@ -179,8 +186,9 @@ public class QuotationController {
             return ResponseEntity.badRequest().body("Fail");
         }
     }
+
     @GetMapping("count-quotation-header")
-    public int countByQuotationListStatusId(@RequestParam("status-id") int statusId){
+    public int countByQuotationListStatusId(@RequestParam("status-id") int statusId) {
         try {
             int result = quotationService.countByQuotationListStatusId(statusId);
             return result;
@@ -190,8 +198,9 @@ public class QuotationController {
             return -1;
         }
     }
+
     @GetMapping("count-in-progress-quotation-header")
-    public int countInProgressQuotationHeader(){
+    public int countInProgressQuotationHeader() {
         try {
             int result = quotationService.countByQuotationListStatusIdTwoOrThree();
             return result;

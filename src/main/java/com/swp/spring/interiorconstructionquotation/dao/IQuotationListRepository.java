@@ -16,6 +16,11 @@ import java.util.List;
 
 @RepositoryRestResource(path = "quotation-list")
 public interface IQuotationListRepository extends JpaRepository<QuotationList, Integer> {
+    @Query("SELECT ql.quotationHeader.customer.userId FROM QuotationList ql WHERE ql.listId = :listId")
+    Integer findUserIdByListId(@Param("listId") int listId);
+
+    @Query("SELECT ql.quotationHeader.staff.userId FROM QuotationList ql WHERE ql.listId = :listId")
+    Integer findStaffIdByListId(@Param("listId") int listId);
 
     @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.CancelListRequest(" +
             "ql.listId, qh.customer.userId, ql.createdDate, ql.estimateTotalPrice, " +

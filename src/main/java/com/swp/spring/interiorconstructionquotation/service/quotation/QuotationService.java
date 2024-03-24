@@ -3,6 +3,7 @@ package com.swp.spring.interiorconstructionquotation.service.quotation;
 
 import com.swp.spring.interiorconstructionquotation.dao.*;
 import com.swp.spring.interiorconstructionquotation.entity.*;
+import com.swp.spring.interiorconstructionquotation.service.email.IEmailSerivce;
 import jakarta.transaction.Transactional;
 import org.apache.catalina.filters.RemoteIpFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,10 @@ public class QuotationService implements IQuotationService {
     private IUserRepository iUserRepository;
     @Autowired
     private IStatusRepository statusRepository;
+    @Autowired
+    private IEmailSerivce iEmailSerivce;
+
+
 
     @Override
     public boolean createQuotation(QuotationRequest quotationRequest) {
@@ -168,12 +173,33 @@ public class QuotationService implements IQuotationService {
         try {
 //            QuotationList quotationList = quotationListRepository.findByListId(listID);
             quotationListRepository.updateStatus(listID, 2);
+            sendApproveEmail(listID);
             return true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
     }
+
+
+    private void sendApproveEmail(int list_id){
+        String subject = "Đơn báo giá đang trong quá trình xử lý.";
+        String text = "Yêu cầu gửi đơn báo giá của bạn đã được Vivadecor thông qua, vui lòng vào trang Thông tin của bạn để theo dõi!";
+        User user = iUserRepository.findByUserId(quotationListRepository.findUserIdByListId(list_id));
+        iEmailSerivce.sendEmail("vivadecor88@gmail.com", user.getEmail(), subject, text);
+    }
+
+    private void sendFinalizeEmail(int list_id){
+
+        User user = iUserRepository.findByUserId(quotationListRepository.findStaffIdByListId(list_id));
+
+        String subject = "Khách hàng đã "+user.getFirstName() +" "+ user.getLastName() + " đã xác nhận đơn báo giá!";
+        String text = "Khách hàng đã "+user.getFirstName() +" "+ user.getLastName() + " đã xác nhận đơn báo giá!"+
+                " vui lòng vào trang Thông tin của bạn để theo dõi!";
+        iEmailSerivce.sendEmail("vivadecor88@gmail.com", user.getEmail(), subject, text);
+    }
+
+
 
     @Override
     public boolean deleteQuatationHeader(int headerId) {
@@ -325,7 +351,7 @@ public class QuotationService implements IQuotationService {
                 }
             }
             quotationListRepository.updateStatus(listId,4);
-            //gui mail
+            sendFinalizeEmail(listId);
             return true;
         }catch (Exception e){
             System.out.println(e.getMessage());

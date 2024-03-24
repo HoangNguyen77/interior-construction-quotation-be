@@ -3,6 +3,7 @@ package com.swp.spring.interiorconstructionquotation.service.user;
 import com.swp.spring.interiorconstructionquotation.dao.IRoleRepository;
 import com.swp.spring.interiorconstructionquotation.dao.IUserRepository;
 import com.swp.spring.interiorconstructionquotation.entity.Notification;
+import com.swp.spring.interiorconstructionquotation.entity.QuotationHeader;
 import com.swp.spring.interiorconstructionquotation.entity.Role;
 import com.swp.spring.interiorconstructionquotation.entity.User;
 import com.swp.spring.interiorconstructionquotation.service.email.EmailService;
@@ -75,6 +76,8 @@ public class UserService implements IUserService {
 
         iEmailService.sendEmail("vivadecor88@gmail.com", email, subject, text);
     }
+
+
     private void sendForgetPasswordEmail(String username, String email, String tempPassword){
         String subject = "Mật khẩu tạm thời của bạn tại VivaDecor";
         String text = "Đây là mật khẩu tạm thời cho tài khoản <"+username+">:<html><body><br/><h1>"+tempPassword+"</h1></body></html>";
