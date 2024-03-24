@@ -3,6 +3,8 @@ package com.swp.spring.interiorconstructionquotation.service.quotation;
 
 import com.swp.spring.interiorconstructionquotation.dao.*;
 import com.swp.spring.interiorconstructionquotation.entity.*;
+import jakarta.transaction.Transactional;
+import org.apache.catalina.filters.RemoteIpFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -176,7 +178,15 @@ public class QuotationService implements IQuotationService {
     @Override
     public boolean deleteQuatationHeader(int headerId) {
         try {
-            quotationHeaderRepository.deleteById(headerId);
+            System.out.println("aaa" + headerId);
+            List<QuotationList> list = quotationListRepository.findByQuotationHeader_HeaderId(headerId);
+            for (QuotationList li : list){
+                quotationListRepository.deleteById(li.getListId());
+            }
+            quotationListRepository.flush();
+
+            quotationHeaderRepository.deleteByHeaderId(headerId);
+            quotationHeaderRepository.flush();
             return true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -281,12 +291,27 @@ public class QuotationService implements IQuotationService {
     }
 
     @Override
+    public boolean cancelQuotation(int headerId) {
+        try {
+            List<QuotationList> quotationLists = quotationListRepository.findByQuotationHeader_HeaderId(headerId);
+            for (QuotationList list : quotationLists){
+                quotationListRepository.updateStatus(list.getListId(),5);
+            }
+            return true;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
     public boolean finalizeQuotation(int listId, int headerId) {
         try {
             List<QuotationList> quotationLists = quotationListRepository.findByListIdNotAndQuotationHeader_HeaderId(listId, headerId);
-            Status status = statusRepository.findByStatusId(5);
-            for (QuotationList list : quotationLists){
-                list.setStatus(status);
+            if (!quotationLists.isEmpty()){
+                for (QuotationList list : quotationLists){
+                    quotationListRepository.updateStatus(list.getListId(),5);
+                }
             }
             quotationListRepository.updateStatus(listId,4);
             //gui mail

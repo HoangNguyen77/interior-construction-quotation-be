@@ -14,4 +14,8 @@ public interface IQuotationHeaderRepository extends JpaRepository<QuotationHeade
     @Query(value = "insert into quotation_header(header_id, customer_id, construction_id) values (?1, ?2, ?3)", nativeQuery = true)
     void createQuotationHeader(int id, int customerID, int constructionID);
     QuotationHeader findByHeaderId(int id);
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM quotation_header WHERE header_id = ?1", nativeQuery = true)
+    void deleteByHeaderId(int headerId);
 }

@@ -48,14 +48,14 @@ public class QuotationController {
             return ResponseEntity.badRequest().body("Fail");
         }
     }
-    @PostMapping("/delete-quotation-header")
-    public ResponseEntity<?> deleteQuatationHeader(@RequestParam int id) {
+    @DeleteMapping("/delete-quotation-header")
+    public ResponseEntity<?> deleteQuatationHeader(@RequestParam("quotation-header-id") int quotation_header_id) {
         try {
-            boolean result = quotationService.deleteQuatationHeader(id);
+            boolean result = quotationService.deleteQuatationHeader(quotation_header_id);
             if (result) {
-                return ResponseEntity.ok().body("Update quotation successfully");
+                return ResponseEntity.ok().body("Delete quotation successfully");
             }
-            return ResponseEntity.ok().body("Update quotation fail");
+            return ResponseEntity.ok().body("Delete quotation fail");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body("Fail");
@@ -144,6 +144,20 @@ public class QuotationController {
                 return ResponseEntity.ok().body("Finalize quotation successfully");
             }
             return ResponseEntity.ok().body("Finalize quotation fail");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
+    }
+    @GetMapping("/cancel-quotation")
+    public ResponseEntity<?> cancelQuotation(@RequestParam("quotation-header-id") int quotation_header_id) {
+        try {
+            System.out.println("aaa" + quotation_header_id);
+            boolean result = quotationService.cancelQuotation(quotation_header_id);
+            if (result) {
+                return ResponseEntity.ok().body("Cancel quotation successfully");
+            }
+            return ResponseEntity.ok().body("Cancel quotation fail");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body("Fail");
