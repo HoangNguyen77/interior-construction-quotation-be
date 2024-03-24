@@ -187,4 +187,15 @@ public class QuotationController {
             return -1;
         }
     }
+    @GetMapping("count-in-progress-quotation-header")
+    public int countInProgressQuotationHeader(){
+        try {
+            int result = quotationService.countByQuotationListStatusIdTwoOrThree();
+            return result;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return -1;
+        }
+    }
 }

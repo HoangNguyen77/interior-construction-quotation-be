@@ -17,4 +17,5 @@ public interface IQuotationService {
     boolean cancelConfirmQuotation(int listId);
     boolean finalizeQuotation(int listId, int headerId);
     int countByQuotationListStatusId( int statusId);
+    int countByQuotationListStatusIdTwoOrThree();
 }

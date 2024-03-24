@@ -343,4 +343,15 @@ public class QuotationService implements IQuotationService {
             return 0;
         }
     }
+
+    @Override
+    public int countByQuotationListStatusIdTwoOrThree() {
+        try {
+            //gui mail
+            return quotationHeaderRepository.countByQuotationListStatusIdTwoOrThree();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return 0;
+        }
+    }
 }
