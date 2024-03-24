@@ -1,14 +1,13 @@
 package com.swp.spring.interiorconstructionquotation.controller;
 
-import com.swp.spring.interiorconstructionquotation.service.finished.FinishedProjectService;
-import com.swp.spring.interiorconstructionquotation.service.finished.IFinishedProjectService;
-import com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest;
-import com.swp.spring.interiorconstructionquotation.service.finished.FinishedProjectRequest;
+import com.swp.spring.interiorconstructionquotation.service.finished.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/finished")
@@ -19,6 +18,11 @@ public class FinishedProjectController {
     public FinishedProjectController(FinishedProjectService finishedProjectService, IFinishedProjectService iFinishedService) {
         this.finishedProjectService = finishedProjectService;
         this.iFinishedService = iFinishedService;
+    }
+
+    @GetMapping("/cancel")
+    public List<CancelListRequest> getAllCancelList(@RequestParam(value = "keyword") String keyword) {
+        return finishedProjectService.findAllCancelList(keyword);
     }
 
     @GetMapping("/quotation")

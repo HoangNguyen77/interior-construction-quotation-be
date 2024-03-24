@@ -1,6 +1,7 @@
 package com.swp.spring.interiorconstructionquotation.dao;
 
 import com.swp.spring.interiorconstructionquotation.entity.QuotationList;
+import com.swp.spring.interiorconstructionquotation.service.finished.CancelListRequest;
 import com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,25 @@ import java.util.List;
 
 @RepositoryRestResource(path = "quotation-list")
 public interface IQuotationListRepository extends JpaRepository<QuotationList, Integer> {
+
+    @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.CancelListRequest(" +
+            "ql.listId, qh.customer.userId, ql.createdDate, ql.estimateTotalPrice, " +
+            "ql.realTotalPrice, ql.status.statusId) " +
+            "FROM QuotationList ql " +
+            "INNER JOIN ql.quotationHeader qh " +
+            "WHERE ql.status.statusId = 5")
+    List<CancelListRequest> findAllCancelListRequest();
+
+    @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.CancelListRequest(" +
+            "ql.listId, qh.customer.userId, ql.createdDate, ql.estimateTotalPrice, " +
+            "ql.realTotalPrice, ql.status.statusId) " +
+            "FROM QuotationList ql " +
+            "INNER JOIN ql.quotationHeader qh " +
+            "WHERE (COALESCE(:searchKeyword, '') = '' OR qh.customer.userId = :searchKeyword OR ql.listId = :searchKeyword) " +
+            "AND ql.status.statusId = 5 " +
+            "ORDER BY ql.createdDate DESC")
+    List<CancelListRequest> findSearchCancelListRequest(@Param("searchKeyword") Integer searchKeyword);
+
     public QuotationList findByListId(int quotationListId);
     @Query("SELECT COUNT(fp) > 0 FROM FinishedProject fp WHERE fp.quotationList.listId = :listId")
     boolean existsFinishedProjectByListId(@Param("listId") int listId);
@@ -51,6 +71,19 @@ public interface IQuotationListRepository extends JpaRepository<QuotationList, I
             "ORDER BY ql.listId DESC")
     List<QuotationList> findListWithStatusIdIs4ByCustomerId(@Param("customerId") int customerId);
 
+
+
+
+
+    @Query("SELECT ql FROM QuotationList ql " +
+            "JOIN ql.quotationHeader qh " +
+            "JOIN ql.status s " +
+            "WHERE s.statusId = 5 " +
+            "AND qh.customer.userId = :customerId "+
+            "ORDER BY ql.listId DESC")
+    List<QuotationList> findListWithStatusIdIs5ByCustomerId(@Param("customerId") int customerId);
+
+
     public List<QuotationList> findByQuotationHeader_HeaderId(@Param("headerId") int headerId);
     public List<QuotationList> findByListIdNotAndQuotationHeader_HeaderId(int listId, int headerId);
     @Query("SELECT NEW com.swp.spring.interiorconstructionquotation.service.finished.QuotationDoneRequest" +
@@ -85,5 +118,10 @@ public interface IQuotationListRepository extends JpaRepository<QuotationList, I
             "LEFT JOIN FinishedProject fp ON ql.listId = fp.quotationList.listId " +  // Left join to check for FinishedProject existence
             "WHERE s.statusId = 1")
     Page<QuotationDoneRequest> findAllByStatusIdIs1(Pageable pageable);
+
+
+
+
+
 
 }

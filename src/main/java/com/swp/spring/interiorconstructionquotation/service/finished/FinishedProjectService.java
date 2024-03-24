@@ -21,6 +21,7 @@ public class FinishedProjectService implements IFinishedProjectService {
     private IQuotationListRepository iQuotationListRepository;
     private IFinishedRepository iFinishedRepository;
     private IFinishedImageRepository iFinishedImageRepository;
+
     @Autowired
     public FinishedProjectService(IQuotationListRepository iQuotationListRepository, IFinishedRepository iFinishedRepository, IFinishedImageRepository iFinishedImageRepository) {
         this.iQuotationListRepository = iQuotationListRepository;
@@ -32,24 +33,40 @@ public class FinishedProjectService implements IFinishedProjectService {
             String keyword, boolean isConstructed, Pageable pageable) {
         return iQuotationListRepository.findAllByStatusIdIs4(keyword, isConstructed, pageable);
     }
+
+    public List<CancelListRequest> findAllCancelList(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return iQuotationListRepository.findAllCancelListRequest();
+        }
+        try {
+            // Thử chuyển đổi keyword thành số nguyên
+            int searchKeyword = Integer.parseInt(keyword);
+            return iQuotationListRepository.findSearchCancelListRequest(searchKeyword);
+        } catch (NumberFormatException e) {
+            // Nếu không thể chuyển đổi thành số nguyên, trả về toàn bộ danh sách
+            return iQuotationListRepository.findSearchCancelListRequest(0);
+        }
+    }
+
     public Page<QuotationDoneRequest> findAllByStatus(
             String keyword, Pageable pageable) {
         return iQuotationListRepository.findAllByStatusIdIs4WithoutConstructed(keyword, pageable);
     }
+
     @Override
     @Transactional
-    public ResponseEntity<?> updateIsConstruction(int headerId){
-        try{
+    public ResponseEntity<?> updateIsConstruction(int headerId) {
+        try {
             QuotationList quotationList = iQuotationListRepository.findByHeaderIdAndStatusIdIs4(headerId);
             quotationList.setConstructed(true);
 
             iQuotationListRepository.saveAndFlush(quotationList);
 
             return ResponseEntity.ok().body("Update quotation list successfully");
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().
-                    body("Change failed due to an error: "+e.getMessage());
+                    body("Change failed due to an error: " + e.getMessage());
         }
     }
 
@@ -59,7 +76,7 @@ public class FinishedProjectService implements IFinishedProjectService {
         try {
             QuotationList quotationList = iQuotationListRepository.findByListId(finishedProjectRequest.getListId());
 
-            if(quotationList == null )
+            if (quotationList == null)
                 return ResponseEntity.badRequest().body("Fail");
 
             FinishedProject finishedProject = new FinishedProject();
@@ -67,14 +84,14 @@ public class FinishedProjectService implements IFinishedProjectService {
             finishedProject.setTitle(finishedProjectRequest.getTitle());
             finishedProject.setContent(finishedProjectRequest.getContent());
 
-            for(String image: finishedProjectRequest.getImages()){
+            for (String image : finishedProjectRequest.getImages()) {
                 FinishedProjectImage projectImage = new FinishedProjectImage();
                 projectImage.setFinishedProject(finishedProject);
                 projectImage.setImageData(image);
                 FinishedProjectImage createProjectImage = iFinishedImageRepository.save(projectImage);
             }
 
-            return  ResponseEntity.ok().body("Success");
+            return ResponseEntity.ok().body("Success");
 
         } catch (Exception e) {
             System.out.printf(e.getMessage());
@@ -85,10 +102,10 @@ public class FinishedProjectService implements IFinishedProjectService {
     @Override
     @Transactional
     public ResponseEntity<?> updateFinishedProject(FinishedProjectRequest finishedProjectRequest) {
-        try{
-            FinishedProject finishedProject= iFinishedRepository.findById(finishedProjectRequest.getProjectId()).orElse(null);
+        try {
+            FinishedProject finishedProject = iFinishedRepository.findById(finishedProjectRequest.getProjectId()).orElse(null);
 
-            if(finishedProject == null)
+            if (finishedProject == null)
                 return ResponseEntity.badRequest().body("Finish project not found");
 
             finishedProject.setTitle(finishedProjectRequest.getTitle());
@@ -98,7 +115,7 @@ public class FinishedProjectService implements IFinishedProjectService {
             List<FinishedProjectImage> existingImage = iFinishedImageRepository.findByFinishedProject_ProjectId(updateProject.getProjectId());
             iFinishedImageRepository.deleteAll(existingImage);
 
-            for (String image : finishedProjectRequest.getImages()){
+            for (String image : finishedProjectRequest.getImages()) {
                 FinishedProjectImage newImage = new FinishedProjectImage();
                 newImage.setFinishedProject(finishedProject);
                 newImage.setImageData(image);
@@ -106,7 +123,7 @@ public class FinishedProjectService implements IFinishedProjectService {
             }
 
             return ResponseEntity.ok().body("Project update successfully");
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.printf(e.getMessage());
             return ResponseEntity.badRequest().body("Update failed due to an error: " + e.getMessage());
         }
