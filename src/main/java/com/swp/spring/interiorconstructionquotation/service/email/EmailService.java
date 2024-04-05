@@ -28,7 +28,7 @@ public class EmailService implements IEmailSerivce {
             helper.setFrom(from);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(text,true);
+            helper.setText("<html><body>" + text.replace("\n", "<br>") + "</body></html>", true);
         }catch (MessagingException e){
             throw new RuntimeException(e);
         }

@@ -183,27 +183,37 @@ public class QuotationService implements IQuotationService {
 
 
     private void sendApproveEmail(int list_id){
-        String subject = "Đơn báo giá đang trong quá trình xử lý.";
-        String text = "Yêu cầu gửi đơn báo giá của bạn đã được Vivadecor thông qua, vui lòng vào trang Thông tin của bạn để theo dõi!";
         User user = iUserRepository.findByUserId(quotationListRepository.findUserIdByListId(list_id));
-        iEmailSerivce.sendEmail("vivadecor88@gmail.com", user.getEmail(), subject, text);
+
+        String subject = "Đơn báo giá #" +list_id+" của bạn đã được chấp thuận.";
+        String txt ="Xin chào "+ user.getFirstName() +" "+ user.getLastName() +",\n\n"+
+                "Đơn báo giá #" +list_id+" của bạn đã được được Vivadecor thông qua.\n";
+        String text = "Vui lòng vào mục Quản lý báo giá trong trang Thông tin của bạn để theo dõi!\n\n"+
+                "Nếu bạn cần được hỗ trợ, vui lòng liên hệ qua email: vivadecor88@gmail.com để nhận trợ giúp kịp thời!";
+        iEmailSerivce.sendEmail("vivadecor88@gmail.com", user.getEmail(), subject, txt+text);
     }
 
     private void sendFinalizeEmail(int list_id){
 
         User user = iUserRepository.findByUserId(quotationListRepository.findStaffIdByListId(list_id));
 
-        String subject = "Khách hàng đã "+user.getFirstName() +" "+ user.getLastName() + " đã xác nhận đơn báo giá!";
-        String text = "Khách hàng đã "+user.getFirstName() +" "+ user.getLastName() + " đã xác nhận đơn báo giá!"+
+        String subject = "Đơn báo giá id: "+ list_id +" đã được xác nhận!";
+        String text = "Khách hàng "+user.getFirstName() +" "+ user.getLastName() +
+                " đã xác nhận đơn báo giá!"+
                 " vui lòng vào trang Thông tin của bạn để theo dõi!";
         iEmailSerivce.sendEmail("vivadecor88@gmail.com", user.getEmail(), subject, text);
     }
 
     private void sendCuzFianlEmail(int list_id){
-        String subject = "Bạn đã xác nhận đơn báo giá!";
-        String text = "Bạn đã xác nhận đơn báo giá tại Vivadecor, vui lòng chờ liên lạc lại từ nhân viên của Vivadecor hoặc liên hệ thông qua mail: vivadecor88@gmail.com !";
         User user = iUserRepository.findByUserId(quotationListRepository.findUserIdByListId(list_id));
-        iEmailSerivce.sendEmail("vivadecor88@gmail.com", user.getEmail(), subject, text);
+
+        String subject = "Bạn đã xác nhận đơn báo giá #"+list_id+"!";
+        String txt ="Xin chào "+ user.getFirstName() +" "+ user.getLastName() +",\n\n"+
+                "Bạn đã xác nhận đơn báo giá #"+list_id+" tại Vivadecor.\n";
+        String text = "Chúng tôi sẽ liên hệ lại với các bạn qua số điện thoại "+user.getPhonenumber()
+                +" hoặc qua email "+ user.getEmail()+" trong thời gian sớm nhất.\n\n"+
+                "Nếu bạn cần được hỗ trợ, vui lòng liên hệ qua email: vivadecor88@gmail.com để nhận trợ giúp kịp thời!";
+        iEmailSerivce.sendEmail("vivadecor88@gmail.com", user.getEmail(), subject, txt+text);
     }
 
     @Override
