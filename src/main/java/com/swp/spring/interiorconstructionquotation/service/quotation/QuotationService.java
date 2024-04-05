@@ -199,7 +199,12 @@ public class QuotationService implements IQuotationService {
         iEmailSerivce.sendEmail("vivadecor88@gmail.com", user.getEmail(), subject, text);
     }
 
-
+    private void sendCuzFianlEmail(int list_id){
+        String subject = "Bạn đã xác nhận đơn báo giá!";
+        String text = "Bạn đã xác nhận đơn báo giá tại Vivadecor, vui lòng chờ liên lạc lại từ nhân viên của Vivadecor hoặc liên hệ thông qua mail: vivadecor88@gmail.com !";
+        User user = iUserRepository.findByUserId(quotationListRepository.findUserIdByListId(list_id));
+        iEmailSerivce.sendEmail("vivadecor88@gmail.com", user.getEmail(), subject, text);
+    }
 
     @Override
     public boolean deleteQuatationHeader(int headerId) {
@@ -352,6 +357,7 @@ public class QuotationService implements IQuotationService {
             }
             quotationListRepository.updateStatus(listId,4);
             sendFinalizeEmail(listId);
+            sendCuzFianlEmail(listId);
             return true;
         }catch (Exception e){
             System.out.println(e.getMessage());
